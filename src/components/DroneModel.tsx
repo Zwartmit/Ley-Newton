@@ -1,19 +1,10 @@
 "use client";
 
-import { Component, Suspense, type ReactNode } from "react";
-import { useGLTF } from "@react-three/drei";
+import { useEffect, useState } from "react";
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 const MODEL_URL = "/models/scene.gltf";
-
-/**
- * Carga el modelo GLTF del dron. Si el modelo no puede cargarse (por ejemplo,
- * falta el binario scene.bin), se usa un dron compuesto con primitivas.
- */
-function GltfDrone() {
-  const { scene } = useGLTF(MODEL_URL);
-  // Escala/orientación para encajar el modelo importado en la escena.
-  return <primitive object={scene} scale={0.6} rotation={[-Math.PI / 2, 0, 0]} />;
-}
 
 /** Dron compuesto con primitivas de Three.js (cuerpo + tobera). */
 export function PrimitiveDrone() {
@@ -56,35 +47,37 @@ export function PrimitiveDrone() {
   );
 }
 
-interface BoundaryProps {
-  fallback: ReactNode;
-  children: ReactNode;
-}
-
-/** Error boundary: si el GLTF falla al cargar, muestra el dron primitivo. */
-class ModelErrorBoundary extends Component<BoundaryProps, { hasError: boolean }> {
-  constructor(props: BoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-  componentDidCatch() {
-    // El modelo no se pudo cargar (p. ej. falta scene.bin); usamos primitivas.
-  }
-  render() {
-    if (this.state.hasError) return this.props.fallback;
-    return this.props.children;
-  }
-}
-
+/**
+ * Carga el modelo GLTF del dron de forma imperativa con GLTFLoader.
+ * Mientras carga (o si falla, p. ej. falta scene.bin) se muestra un dron
+ * compuesto con primitivas; al cargar correctamente se reemplaza por el modelo.
+ */
 export default function DroneModel() {
-  return (
-    <ModelErrorBoundary fallback={<PrimitiveDrone />}>
-      <Suspense fallback={<PrimitiveDrone />}>
-        <GltfDrone />
-      </Suspense>
-    </ModelErrorBoundary>
-  );
+  const [scene, setScene] = useState<THREE.Group | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const loader = new GLTFLoader();
+    loader.load(
+      MODEL_URL,
+      (gltf) => {
+        if (alive) setScene(gltf.scene);
+      },
+      undefined,
+      () => {
+        // No se pudo cargar el modelo (p. ej. falta scene.bin): usamos primitivas.
+        if (alive) setScene(null);
+      },
+    );
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (scene) {
+    return (
+      <primitive object={scene} scale={0.6} rotation={[-Math.PI / 2, 0, 0]} />
+    );
+  }
+  return <PrimitiveDrone />;
 }

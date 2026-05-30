@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
 import { ReactLenis } from "@studio-freight/react-lenis";
 import gsap from "gsap";
+import Scene from "./Scene";
 import ControlPanel from "./ui/ControlPanel";
 import TelemetryPanel from "./ui/TelemetryPanel";
 import {
@@ -12,16 +12,6 @@ import {
   type SimParams,
   type Telemetry,
 } from "@/lib/types";
-
-// La escena 3D depende del DOM/WebGL: se carga solo en el cliente.
-const Scene = dynamic(() => import("./Scene"), {
-  ssr: false,
-  loading: () => (
-    <div className="fixed inset-0 grid place-items-center bg-[#05060a] text-zinc-500">
-      Cargando escena 3D…
-    </div>
-  ),
-});
 
 export default function SimulationApp() {
   const [params, setParams] = useState<SimParams>(DEFAULT_PARAMS);

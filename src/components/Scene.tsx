@@ -21,27 +21,21 @@ export default function Scene({
 }: SceneProps) {
   return (
     <Canvas
-      shadows
       camera={{ position: [7, 4, 9], fov: 45 }}
-      gl={{ antialias: true }}
+      dpr={1}
+      gl={{ antialias: false, powerPreference: "high-performance" }}
       className="!fixed inset-0"
     >
       <color attach="background" args={["#05060a"]} />
       <fog attach="fog" args={["#05060a", 18, 45]} />
 
       {/* Iluminación */}
-      <ambientLight intensity={0.4} />
-      <directionalLight
-        position={[6, 10, 6]}
-        intensity={2.2}
-        castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-      />
-      <directionalLight position={[-8, -4, -6]} intensity={0.4} color="#60a5fa" />
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[6, 10, 6]} intensity={2.2} />
+      <directionalLight position={[-8, -4, -6]} intensity={0.5} color="#60a5fa" />
 
       {/* Ambiente espacial (vacío) */}
-      <Stars radius={80} depth={50} count={3000} factor={4} fade speed={0.5} />
+      <Stars radius={80} depth={40} count={1500} factor={4} fade speed={0.5} />
       <Grid
         position={[0, -3.5, 0]}
         args={[40, 40]}
