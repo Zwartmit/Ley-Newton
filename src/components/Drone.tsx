@@ -22,6 +22,7 @@ interface DroneProps {
   ignitionId: number;
   resetId: number;
   onTelemetry: (t: Telemetry) => void;
+  onThrustingChange: (thrusting: boolean) => void;
 }
 
 export default function Drone({
@@ -29,6 +30,7 @@ export default function Drone({
   ignitionId,
   resetId,
   onTelemetry,
+  onThrustingChange,
 }: DroneProps) {
   const body = useRef<RapierRigidBody>(null);
   const [thrusting, setThrusting] = useState(false);
@@ -36,6 +38,12 @@ export default function Drone({
   const burnStart = useRef(Number.NEGATIVE_INFINITY); // instante (s) de inicio del encendido
   const prevSpeed = useRef(0);
   const reportAcc = useRef(0); // acumulador para limitar la frecuencia de telemetría
+
+  // El motor físico es la única fuente de verdad del estado de encendido: lo
+  // notificamos hacia arriba para que la interfaz siempre coincida con la física.
+  useEffect(() => {
+    onThrustingChange(thrusting);
+  }, [thrusting, onThrustingChange]);
 
   // Disparar el encendido cuando cambia ignitionId.
   useEffect(() => {

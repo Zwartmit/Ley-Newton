@@ -6,12 +6,7 @@ import gsap from "gsap";
 import Scene from "./Scene";
 import ControlPanel from "./ui/ControlPanel";
 import TelemetryPanel from "./ui/TelemetryPanel";
-import {
-  BURN_SECONDS_PER_KG,
-  DEFAULT_PARAMS,
-  type SimParams,
-  type Telemetry,
-} from "@/lib/types";
+import { DEFAULT_PARAMS, type SimParams, type Telemetry } from "@/lib/types";
 
 export default function SimulationApp() {
   const [params, setParams] = useState<SimParams>(DEFAULT_PARAMS);
@@ -23,31 +18,26 @@ export default function SimulationApp() {
     acceleration: 0,
   });
 
-  const burnTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
 
   const handleTelemetry = useCallback((t: Telemetry) => setTelemetry(t), []);
 
+  // El estado de encendido lo reporta el motor físico (Drone), de modo que la
+  // interfaz siempre coincide con la duración real del empuje aunque se cambien
+  // los parámetros a mitad del encendido.
+  const handleThrustingChange = useCallback(
+    (value: boolean) => setThrusting(value),
+    [],
+  );
+
   const handleIgnition = useCallback(() => {
     setIgnitionId((n) => n + 1);
-    setThrusting(true);
-    if (burnTimer.current) clearTimeout(burnTimer.current);
-    const burnMs = params.propellantMass * BURN_SECONDS_PER_KG * 1000;
-    burnTimer.current = setTimeout(() => setThrusting(false), burnMs);
-  }, [params.propellantMass]);
+  }, []);
 
   const handleReset = useCallback(() => {
     setResetId((n) => n + 1);
-    setThrusting(false);
-    if (burnTimer.current) clearTimeout(burnTimer.current);
     setTelemetry({ velocity: 0, acceleration: 0 });
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (burnTimer.current) clearTimeout(burnTimer.current);
-    };
   }, []);
 
   // Animaciones de entrada con GSAP.
@@ -86,6 +76,7 @@ export default function SimulationApp() {
           ignitionId={ignitionId}
           resetId={resetId}
           onTelemetry={handleTelemetry}
+          onThrustingChange={handleThrustingChange}
         />
 
         {/* Capa de interfaz */}

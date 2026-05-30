@@ -11,6 +11,7 @@ interface SceneProps {
   ignitionId: number;
   resetId: number;
   onTelemetry: (t: Telemetry) => void;
+  onThrustingChange: (thrusting: boolean) => void;
 }
 
 export default function Scene({
@@ -18,6 +19,7 @@ export default function Scene({
   ignitionId,
   resetId,
   onTelemetry,
+  onThrustingChange,
 }: SceneProps) {
   return (
     <Canvas
@@ -56,6 +58,7 @@ export default function Scene({
           ignitionId={ignitionId}
           resetId={resetId}
           onTelemetry={onTelemetry}
+          onThrustingChange={onThrustingChange}
         />
       </Physics>
 
