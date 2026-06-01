@@ -2,7 +2,7 @@
 
 import { Clone, useGLTF } from "@react-three/drei";
 
-const MODEL_URL = "/models/scene.glb";
+const MODEL_URL = "/models/scene-transformed.glb";
 
 /**
  * Carga el modelo GLB del dron mediante `useGLTF` (caché de drei).
