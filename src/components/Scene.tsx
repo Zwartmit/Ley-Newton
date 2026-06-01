@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 import type { ComponentRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars, Grid } from "@react-three/drei";
@@ -62,18 +62,23 @@ export default function Scene({
         infiniteGrid
       />
 
-      {/* Mundo físico en gravedad cero (interpolado para suavizar el movimiento) */}
-      <Physics gravity={[0, 0, 0]} interpolate>
-        <Drone
-          params={params}
-          ignitionId={ignitionId}
-          resetId={resetId}
-          onTelemetry={onTelemetry}
-          onThrustingChange={onThrustingChange}
-          onFlightComplete={onFlightComplete}
-          droneYRef={droneYRef}
-        />
-      </Physics>
+      {/* Mundo físico en gravedad cero (interpolado para suavizar el movimiento).
+         El límite de Suspense vive aquí arriba (no dentro del RigidBody) para que
+         remontar el cuerpo al cambiar la masa no dispare ningún fallback: el GLB
+         ya está precargado en la caché de `useGLTF`. */}
+      <Suspense fallback={null}>
+        <Physics gravity={[0, 0, 0]} interpolate>
+          <Drone
+            params={params}
+            ignitionId={ignitionId}
+            resetId={resetId}
+            onTelemetry={onTelemetry}
+            onThrustingChange={onThrustingChange}
+            onFlightComplete={onFlightComplete}
+            droneYRef={droneYRef}
+          />
+        </Physics>
+      </Suspense>
 
       <CameraRig fov={fov} droneYRef={droneYRef} controlsRef={controlsRef} />
 
