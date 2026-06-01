@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://devmit-tech.com"),
+  metadataBase: new URL("https://leynewton.devmit-tech.com"),
   title: {
     default: "Laboratorio 3D: Segunda Ley de Newton",
     template: "%s | Laboratorio de Física",
