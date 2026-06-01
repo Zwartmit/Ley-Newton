@@ -90,7 +90,7 @@ export default function AnalysisPanel({
   return (
     <div
       ref={rootRef}
-      className={`pointer-events-auto w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border bg-zinc-950/70 p-5 shadow-2xl backdrop-blur-xl transition-colors duration-500 ${
+      className={`pointer-events-auto fixed bottom-32 left-1/2 z-20 w-[90vw] -translate-x-1/2 overflow-hidden rounded-2xl border bg-zinc-950/70 p-4 shadow-2xl backdrop-blur-xl transition-colors duration-500 md:static md:bottom-auto md:left-auto md:z-auto md:w-[22rem] md:max-w-[calc(100vw-2rem)] md:translate-x-0 md:p-5 ${
         thrusting
           ? "border-fuchsia-400/60 shadow-[0_0_28px_-4px_rgba(232,121,249,0.55)]"
           : "border-cyan-400/30 shadow-[0_0_22px_-8px_rgba(34,211,238,0.5)]"

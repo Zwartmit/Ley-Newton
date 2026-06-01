@@ -127,7 +127,7 @@ export default function SimulationApp() {
               />
             </div>
             <div className="flex flex-col items-end gap-4">
-              <div data-anim>
+              <div data-anim className="hidden md:block">
                 <TelemetryPanel telemetry={telemetry} />
               </div>
               <AnalysisPanel
@@ -141,7 +141,7 @@ export default function SimulationApp() {
           <div className="flex items-end justify-between gap-4">
             <div
               data-anim
-              className="pointer-events-auto rounded-xl border border-white/10 bg-zinc-900/60 px-4 py-3 text-xs backdrop-blur-md"
+              className="pointer-events-auto hidden rounded-xl border border-white/10 bg-zinc-900/60 px-4 py-3 text-xs backdrop-blur-md sm:block"
             >
               <div className="flex items-center gap-2">
                 <span className="inline-block h-2.5 w-6 rounded-full bg-green-500" />

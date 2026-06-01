@@ -66,9 +66,9 @@ export default function ControlPanel({
   const set = (patch: Partial<SimParams>) => onChange({ ...params, ...patch });
 
   return (
-    <div className="pointer-events-auto w-[20rem] max-w-[calc(100vw-2rem)] rounded-2xl border border-white/10 bg-zinc-900/70 p-5 shadow-2xl backdrop-blur-md">
-      <div className="mb-4">
-        <h1 className="text-lg font-semibold text-white">
+    <div className="pointer-events-auto max-h-[calc(100dvh-2rem)] w-[15rem] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-white/10 bg-zinc-900/70 p-3 shadow-2xl backdrop-blur-md sm:w-[20rem] sm:p-5">
+      <div className="mb-3 sm:mb-4">
+        <h1 className="text-base font-semibold text-white sm:text-lg">
           Tercera Ley de Newton
         </h1>
         <p className="text-xs text-zinc-400">
@@ -76,7 +76,7 @@ export default function ControlPanel({
         </p>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 sm:gap-4">
         <Slider
           label="Masa del propelente"
           unit="kg"
@@ -110,7 +110,7 @@ export default function ControlPanel({
         />
       </div>
 
-      <div className="mt-5 flex gap-3">
+      <div className="mt-4 flex gap-3 sm:mt-5">
         <button
           onClick={onIgnition}
           disabled={thrusting}
