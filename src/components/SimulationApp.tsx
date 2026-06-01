@@ -7,14 +7,20 @@ import Scene from "./Scene";
 import ControlPanel from "./ui/ControlPanel";
 import TelemetryPanel from "./ui/TelemetryPanel";
 import AnalysisPanel from "./ui/AnalysisPanel";
+import CanvasControls from "./ui/CanvasControls";
+import { DEFAULT_FOV, FOV_STEP, MAX_FOV, MIN_FOV } from "@/lib/physics";
 import { DEFAULT_PARAMS, type SimParams, type Telemetry } from "@/lib/types";
+
+const THEORY_ID = "teoria";
 
 export default function SimulationApp() {
   const [params, setParams] = useState<SimParams>(DEFAULT_PARAMS);
   const [ignitionId, setIgnitionId] = useState(0);
   const [resetId, setResetId] = useState(0);
   const [thrusting, setThrusting] = useState(false);
-  const [hasIgnited, setHasIgnited] = useState(false);
+  // El panel de análisis solo se revela cuando concluye el vuelo (auto-reinicio).
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [fov, setFov] = useState(DEFAULT_FOV);
   const [telemetry, setTelemetry] = useState<Telemetry>({
     velocity: 0,
     acceleration: 0,
@@ -34,16 +40,35 @@ export default function SimulationApp() {
     [],
   );
 
+  // El panel queda oculto al iniciar el vuelo; solo reaparece al concluir.
   const handleIgnition = useCallback(() => {
     setIgnitionId((n) => n + 1);
-    setHasIgnited(true);
+    setShowAnalysis(false);
   }, []);
 
   const handleReset = useCallback(() => {
     setResetId((n) => n + 1);
     setTelemetry({ velocity: 0, acceleration: 0 });
-    setHasIgnited(false);
+    setShowAnalysis(false);
   }, []);
+
+  // Cambiar parámetros invalida el informe anterior: se oculta el panel.
+  const handleParamsChange = useCallback((next: SimParams) => {
+    setParams(next);
+    setShowAnalysis(false);
+  }, []);
+
+  // El vuelo concluyó (el dron superó la altitud máxima y se reinició solo).
+  const handleFlightComplete = useCallback(() => setShowAnalysis(true), []);
+
+  const handleZoomIn = useCallback(
+    () => setFov((f) => Math.max(MIN_FOV, f - FOV_STEP)),
+    [],
+  );
+  const handleZoomOut = useCallback(
+    () => setFov((f) => Math.min(MAX_FOV, f + FOV_STEP)),
+    [],
+  );
 
   // Animaciones de entrada con GSAP.
   useEffect(() => {
@@ -80,8 +105,10 @@ export default function SimulationApp() {
           params={params}
           ignitionId={ignitionId}
           resetId={resetId}
+          fov={fov}
           onTelemetry={handleTelemetry}
           onThrustingChange={handleThrustingChange}
+          onFlightComplete={handleFlightComplete}
         />
 
         {/* Capa de interfaz */}
@@ -93,7 +120,7 @@ export default function SimulationApp() {
             <div data-anim>
               <ControlPanel
                 params={params}
-                onChange={setParams}
+                onChange={handleParamsChange}
                 onIgnition={handleIgnition}
                 onReset={handleReset}
                 thrusting={thrusting}
@@ -104,7 +131,7 @@ export default function SimulationApp() {
                 <TelemetryPanel telemetry={telemetry} />
               </div>
               <AnalysisPanel
-                show={hasIgnited}
+                show={showAnalysis}
                 thrusting={thrusting}
                 params={params}
               />
@@ -129,12 +156,16 @@ export default function SimulationApp() {
               data-anim
               className="pointer-events-none hidden text-right text-xs text-zinc-500 sm:block"
             >
-              Arrastra para orbitar · Rueda para acercar
-              <div className="mt-1 animate-pulse text-zinc-400">
-                ↓ Desplázate para conocer la teoría
-              </div>
+              Arrastra para orbitar · Usa +/− para acercar
             </div>
           </div>
+
+          {/* Controles flotantes: zoom manual + acceso a la teoría */}
+          <CanvasControls
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            theoryTarget={`#${THEORY_ID}`}
+          />
         </div>
 
         {/* Espaciador para revelar la sección teórica al desplazar */}
@@ -142,6 +173,7 @@ export default function SimulationApp() {
 
         {/* Sección teórica (scroll suave con Lenis) */}
         <section
+          id={THEORY_ID}
           ref={infoRef}
           className="relative z-20 border-t border-white/10 bg-zinc-950/85 px-6 py-20 backdrop-blur-xl"
         >

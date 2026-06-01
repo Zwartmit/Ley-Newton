@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import {
   RigidBody,
@@ -13,6 +13,7 @@ import ExhaustParticles from "./ExhaustParticles";
 import type { SimParams, Telemetry } from "@/lib/types";
 import {
   BURN_SECONDS_PER_KG,
+  MAX_ALTITUDE,
   MAX_FRAME_DT,
   TELEMETRY_INTERVAL,
   THRUST_AXIS,
@@ -24,6 +25,10 @@ interface DroneProps {
   resetId: number;
   onTelemetry: (t: Telemetry) => void;
   onThrustingChange: (thrusting: boolean) => void;
+  /** Se invoca cuando el dron supera la altitud máxima y se reinicia solo. */
+  onFlightComplete: () => void;
+  /** Ref compartida con la altura (Y) del dron para el seguimiento de cámara. */
+  droneYRef: RefObject<number>;
 }
 
 export default function Drone({
@@ -32,6 +37,8 @@ export default function Drone({
   resetId,
   onTelemetry,
   onThrustingChange,
+  onFlightComplete,
+  droneYRef,
 }: DroneProps) {
   const body = useRef<RapierRigidBody>(null);
   const [thrusting, setThrusting] = useState(false);
@@ -55,8 +62,8 @@ export default function Drone({
     setThrusting(true);
   }, [ignitionId]);
 
-  // Reiniciar posición/velocidad cuando cambia resetId.
-  useEffect(() => {
+  // Devuelve el dron al origen con la velocidad anulada y limpia el estado físico.
+  const resetBody = useCallback(() => {
     const rb = body.current;
     if (!rb) return;
     rb.setTranslation({ x: 0, y: 0, z: 0 }, true);
@@ -66,9 +73,15 @@ export default function Drone({
     burning.current = false;
     burnElapsed.current = 0;
     prevAxialV.current = 0;
+    droneYRef.current = 0;
     setThrusting(false);
     onTelemetry({ velocity: 0, acceleration: 0 });
-  }, [resetId, onTelemetry]);
+  }, [onTelemetry, droneYRef]);
+
+  // Reiniciar posición/velocidad cuando cambia resetId.
+  useEffect(() => {
+    resetBody();
+  }, [resetId, resetBody]);
 
   useFrame((_, delta) => {
     const rb = body.current;
@@ -105,6 +118,17 @@ export default function Drone({
     if (reportAcc.current >= TELEMETRY_INTERVAL) {
       reportAcc.current = 0;
       onTelemetry({ velocity: speed, acceleration: accel });
+    }
+
+    // Compartir la altura para el seguimiento de cámara.
+    const posY = rb.translation().y;
+    droneYRef.current = posY;
+
+    // Al superar la altitud máxima, el vuelo concluye: reiniciamos y solo
+    // entonces dejamos que la interfaz revele el panel de análisis.
+    if (posY > MAX_ALTITUDE) {
+      resetBody();
+      onFlightComplete();
     }
   });
 

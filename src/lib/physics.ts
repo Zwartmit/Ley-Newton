@@ -25,3 +25,12 @@ export const NOZZLE_Y = -0.95;
 export const ARROW_BASE_LENGTH = 1.4;
 export const ARROW_LENGTH_PER_NEWTON = 0.012;
 export const ARROW_MAX_LENGTH = 4;
+
+/** Altitud (Y) que al superarse concluye el vuelo y dispara el auto-reinicio. */
+export const MAX_ALTITUDE = 40;
+
+/** Campo de visión (grados) de la cámara y límites para el zoom manual. */
+export const DEFAULT_FOV = 45;
+export const MIN_FOV = 25;
+export const MAX_FOV = 70;
+export const FOV_STEP = 5;

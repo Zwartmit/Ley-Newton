@@ -1,29 +1,40 @@
 "use client";
 
+import { useRef } from "react";
+import type { ComponentRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars, Grid } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import Drone from "./Drone";
+import CameraRig from "./CameraRig";
+import { DEFAULT_FOV } from "@/lib/physics";
 import type { SimParams, Telemetry } from "@/lib/types";
 
 interface SceneProps {
   params: SimParams;
   ignitionId: number;
   resetId: number;
+  fov: number;
   onTelemetry: (t: Telemetry) => void;
   onThrustingChange: (thrusting: boolean) => void;
+  onFlightComplete: () => void;
 }
 
 export default function Scene({
   params,
   ignitionId,
   resetId,
+  fov,
   onTelemetry,
   onThrustingChange,
+  onFlightComplete,
 }: SceneProps) {
+  const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
+  const droneYRef = useRef(0);
+
   return (
     <Canvas
-      camera={{ position: [7, 4, 9], fov: 45 }}
+      camera={{ position: [7, 4, 9], fov: DEFAULT_FOV }}
       dpr={[1, 2]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       className="!fixed inset-0"
@@ -51,19 +62,25 @@ export default function Scene({
         infiniteGrid
       />
 
-      {/* Mundo físico en gravedad cero */}
-      <Physics gravity={[0, 0, 0]}>
+      {/* Mundo físico en gravedad cero (interpolado para suavizar el movimiento) */}
+      <Physics gravity={[0, 0, 0]} interpolate>
         <Drone
           params={params}
           ignitionId={ignitionId}
           resetId={resetId}
           onTelemetry={onTelemetry}
           onThrustingChange={onThrustingChange}
+          onFlightComplete={onFlightComplete}
+          droneYRef={droneYRef}
         />
       </Physics>
 
+      <CameraRig fov={fov} droneYRef={droneYRef} controlsRef={controlsRef} />
+
       <OrbitControls
+        ref={controlsRef}
         enablePan={false}
+        enableZoom={false}
         minDistance={4}
         maxDistance={30}
         makeDefault
