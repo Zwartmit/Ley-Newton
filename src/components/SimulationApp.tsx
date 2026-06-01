@@ -117,7 +117,10 @@ export default function SimulationApp() {
           className="pointer-events-none fixed inset-0 z-10 flex flex-col justify-between p-4 sm:p-6"
         >
           <div className="flex items-start justify-between gap-4">
-            <div data-anim>
+            {/* En móvil el panel es un bottom sheet (position: fixed). No se
+                envuelve con [data-anim] porque el transform de la animación de
+                entrada de GSAP rompería el posicionamiento fixed. */}
+            <div>
               <ControlPanel
                 params={params}
                 onChange={handleParamsChange}
@@ -141,7 +144,7 @@ export default function SimulationApp() {
           <div className="flex items-end justify-between gap-4">
             <div
               data-anim
-              className="pointer-events-auto hidden rounded-xl border border-white/10 bg-zinc-900/60 px-4 py-3 text-xs backdrop-blur-md sm:block"
+              className="pointer-events-auto hidden rounded-xl border border-white/10 bg-zinc-900/60 px-4 py-3 text-xs backdrop-blur-md md:block"
             >
               <div className="flex items-center gap-2">
                 <span className="inline-block h-2.5 w-6 rounded-full bg-green-500" />
@@ -154,7 +157,7 @@ export default function SimulationApp() {
             </div>
             <div
               data-anim
-              className="pointer-events-none hidden text-right text-xs text-zinc-500 sm:block"
+              className="pointer-events-none hidden text-right text-xs text-zinc-500 md:block"
             >
               Arrastra para orbitar · Usa +/− para acercar
             </div>

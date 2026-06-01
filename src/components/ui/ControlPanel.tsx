@@ -4,6 +4,8 @@ import type { SimParams } from "@/lib/types";
 
 interface SliderProps {
   label: string;
+  /** Etiqueta corta para móvil (ahorra espacio en el bottom sheet). */
+  shortLabel: string;
   unit: string;
   value: number;
   min: number;
@@ -16,6 +18,7 @@ interface SliderProps {
 
 function Slider({
   label,
+  shortLabel,
   unit,
   value,
   min,
@@ -28,7 +31,10 @@ function Slider({
   return (
     <div className={`flex flex-col gap-1.5 ${disabled ? "opacity-50" : ""}`}>
       <div className="flex items-baseline justify-between">
-        <label className="text-sm font-medium text-zinc-200">{label}</label>
+        <label className="text-sm font-medium text-zinc-200">
+          <span className="md:hidden">{shortLabel}</span>
+          <span className="hidden md:inline">{label}</span>
+        </label>
         <span className="font-mono text-sm tabular-nums text-cyan-300">
           {value.toFixed(step < 1 ? 1 : 0)} {unit}
         </span>
@@ -43,7 +49,9 @@ function Slider({
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-700 accent-cyan-400 disabled:cursor-not-allowed"
       />
-      {hint ? <p className="text-xs text-zinc-500">{hint}</p> : null}
+      {hint ? (
+        <p className="hidden text-xs text-zinc-500 md:block">{hint}</p>
+      ) : null}
     </div>
   );
 }
@@ -66,19 +74,20 @@ export default function ControlPanel({
   const set = (patch: Partial<SimParams>) => onChange({ ...params, ...patch });
 
   return (
-    <div className="pointer-events-auto max-h-[calc(100dvh-2rem)] w-[15rem] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-white/10 bg-zinc-900/70 p-3 shadow-2xl backdrop-blur-md sm:w-[20rem] sm:p-5">
-      <div className="mb-3 sm:mb-4">
-        <h1 className="text-base font-semibold text-white sm:text-lg">
+    <div className="pointer-events-auto fixed inset-x-0 bottom-0 z-20 max-h-[75dvh] w-full overflow-y-auto rounded-t-2xl border border-white/10 bg-zinc-900/80 p-4 shadow-2xl backdrop-blur-md md:static md:inset-auto md:z-auto md:max-h-[calc(100dvh-2rem)] md:w-[20rem] md:max-w-[calc(100vw-2rem)] md:rounded-2xl md:p-5">
+      <div className="mb-3 md:mb-4">
+        <h1 className="text-base font-semibold text-white md:text-lg">
           Tercera Ley de Newton
         </h1>
-        <p className="text-xs text-zinc-400">
+        <p className="hidden text-xs text-zinc-400 md:block">
           Acción y reacción en gravedad cero
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:gap-4">
+      <div className="flex flex-col gap-3 md:gap-4">
         <Slider
           label="Masa del propelente"
+          shortLabel="Propelente"
           unit="kg"
           value={params.propellantMass}
           min={0.5}
@@ -89,6 +98,7 @@ export default function ControlPanel({
         />
         <Slider
           label="Fuerza de eyección"
+          shortLabel="Fuerza"
           unit="N"
           value={params.ejectionForce}
           min={5}
@@ -99,6 +109,7 @@ export default function ControlPanel({
         />
         <Slider
           label="Masa del dron"
+          shortLabel="Masa dron"
           unit="kg"
           value={params.droneMass}
           min={4}
@@ -110,17 +121,17 @@ export default function ControlPanel({
         />
       </div>
 
-      <div className="mt-4 flex gap-3 sm:mt-5">
+      <div className="mt-4 flex flex-col gap-2 md:mt-5 md:flex-row md:gap-3">
         <button
           onClick={onIgnition}
           disabled={thrusting}
-          className="flex-1 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:from-orange-400 hover:to-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-xl bg-gradient-to-r from-orange-500 to-red-500 px-4 py-3 text-base font-semibold text-white shadow-lg transition hover:from-orange-400 hover:to-red-400 disabled:cursor-not-allowed disabled:opacity-50 md:flex-1 md:py-2.5 md:text-sm"
         >
           {thrusting ? "Encendido…" : "🔥 Ignición"}
         </button>
         <button
           onClick={onReset}
-          className="rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:bg-white/10"
+          className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:bg-white/10 md:w-auto"
         >
           Reiniciar
         </button>

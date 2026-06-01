@@ -34,7 +34,7 @@ export default function Scene({
 
   return (
     <Canvas
-      camera={{ position: [7, 4, 9], fov: DEFAULT_FOV }}
+      camera={{ position: [0, 2, 15], fov: DEFAULT_FOV }}
       dpr={[1, 2]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       className="!fixed inset-0"
@@ -82,7 +82,10 @@ export default function Scene({
         enablePan={false}
         enableZoom={false}
         minDistance={4}
-        maxDistance={30}
+        // Holgado: con la cámara fija cerca del suelo y el punto de mira subiendo
+        // hasta Y=40, la distancia cámara→objetivo llega a ~41. Un máximo amplio
+        // evita que update() reposicione la cámara para respetar el límite.
+        maxDistance={80}
         makeDefault
       />
     </Canvas>

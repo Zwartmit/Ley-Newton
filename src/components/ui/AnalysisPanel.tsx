@@ -52,12 +52,13 @@ export default function AnalysisPanel({
     const el = rootRef.current;
     if (!el || !show) return;
     const ctx = gsap.context(() => {
+      // Solo opacidad/desenfoque para no pisar los `translate` de centrado del
+      // modal en móvil (-translate-x-1/2 -translate-y-1/2).
       gsap.fromTo(
         el,
-        { opacity: 0, y: 28, filter: "blur(8px)" },
+        { opacity: 0, filter: "blur(10px)" },
         {
           opacity: 1,
-          y: 0,
           filter: "blur(0px)",
           duration: 0.7,
           ease: "power3.out",
@@ -88,14 +89,21 @@ export default function AnalysisPanel({
     });
 
   return (
-    <div
-      ref={rootRef}
-      className={`pointer-events-auto fixed bottom-32 left-1/2 z-20 w-[90vw] -translate-x-1/2 overflow-hidden rounded-2xl border bg-zinc-950/70 p-4 shadow-2xl backdrop-blur-xl transition-colors duration-500 md:static md:bottom-auto md:left-auto md:z-auto md:w-[22rem] md:max-w-[calc(100vw-2rem)] md:translate-x-0 md:p-5 ${
-        thrusting
-          ? "border-fuchsia-400/60 shadow-[0_0_28px_-4px_rgba(232,121,249,0.55)]"
-          : "border-cyan-400/30 shadow-[0_0_22px_-8px_rgba(34,211,238,0.5)]"
-      }`}
-    >
+    <>
+      {/* Fondo del modal (solo móvil): desenfoque intenso sobre toda la escena.
+          Es puramente visual (pointer-events-none) para no atrapar al usuario. */}
+      <div
+        className="pointer-events-none fixed inset-0 z-20 bg-black/50 backdrop-blur-md md:hidden"
+        aria-hidden
+      />
+      <div
+        ref={rootRef}
+        className={`pointer-events-auto fixed left-1/2 top-1/2 z-30 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border bg-zinc-950/80 p-4 shadow-2xl backdrop-blur-2xl transition-colors duration-500 md:static md:left-auto md:top-auto md:z-auto md:w-[22rem] md:max-w-[calc(100vw-2rem)] md:translate-x-0 md:translate-y-0 md:bg-zinc-950/70 md:p-5 md:backdrop-blur-xl ${
+          thrusting
+            ? "border-fuchsia-400/60 shadow-[0_0_28px_-4px_rgba(232,121,249,0.55)]"
+            : "border-cyan-400/30 shadow-[0_0_22px_-8px_rgba(34,211,238,0.5)]"
+        }`}
+      >
       {/* Línea superior de neón animada */}
       <div
         className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent ${
@@ -169,6 +177,7 @@ export default function AnalysisPanel({
         a = F / m = {num(ejectionForce, 0)} N / {num(droneMass, 0)} kg ={" "}
         {num(acceleration)} m/s²
       </div>
-    </div>
+      </div>
+    </>
   );
 }
