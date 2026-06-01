@@ -30,9 +30,9 @@ export default function CanvasControls({
   return (
     <>
       {/* Zoom manual (la rueda del ratón queda libre para el scroll de la página).
-          En móvil va abajo a la derecha, sobre el botón de teoría; en escritorio,
-          centrado al borde derecho. */}
-      <div className="absolute bottom-6 right-4 flex flex-col gap-2 md:bottom-auto md:right-6 md:top-1/2 md:-translate-y-1/2">
+          En móvil va arriba a la derecha, fuera del paso del bottom sheet; en
+          escritorio, centrado al borde derecho. */}
+      <div className="absolute right-4 top-4 z-30 flex flex-col gap-2 md:right-6 md:top-1/2 md:-translate-y-1/2">
         <button
           type="button"
           aria-label="Acercar"
@@ -51,8 +51,9 @@ export default function CanvasControls({
         </button>
       </div>
 
-      {/* Acceso a la teoría con scroll suave (Lenis) */}
-      <div className="absolute inset-x-0 bottom-6 flex justify-center">
+      {/* Acceso a la teoría con scroll suave (Lenis). En móvil va arriba al centro
+          (el bottom sheet ocupa la parte inferior); en escritorio, abajo al centro. */}
+      <div className="absolute inset-x-0 top-4 flex justify-center md:bottom-6 md:top-auto">
         <button
           type="button"
           onClick={() => lenis?.scrollTo(theoryTarget, { duration: 1.6 })}

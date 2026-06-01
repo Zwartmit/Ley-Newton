@@ -40,7 +40,8 @@ export default function SimulationApp() {
     [],
   );
 
-  // El panel queda oculto al iniciar el vuelo; solo reaparece al concluir.
+  // El panel queda oculto al iniciar el vuelo; solo reaparece al concluir. Un
+  // nuevo encendido es una de las dos únicas formas de cerrarlo (junto con ✕).
   const handleIgnition = useCallback(() => {
     setIgnitionId((n) => n + 1);
     setShowAnalysis(false);
@@ -49,14 +50,16 @@ export default function SimulationApp() {
   const handleReset = useCallback(() => {
     setResetId((n) => n + 1);
     setTelemetry({ velocity: 0, acceleration: 0 });
-    setShowAnalysis(false);
   }, []);
 
-  // Cambiar parámetros invalida el informe anterior: se oculta el panel.
+  // Cambiar parámetros ya no cierra el panel: permanece hasta que el usuario
+  // pulse ✕ o dispare un nuevo encendido.
   const handleParamsChange = useCallback((next: SimParams) => {
     setParams(next);
-    setShowAnalysis(false);
   }, []);
+
+  // Cierre explícito del panel (botón ✕).
+  const handleCloseAnalysis = useCallback(() => setShowAnalysis(false), []);
 
   // El vuelo concluyó (el dron superó la altitud máxima y se reinició solo).
   const handleFlightComplete = useCallback(() => setShowAnalysis(true), []);
@@ -117,7 +120,10 @@ export default function SimulationApp() {
           className="pointer-events-none fixed inset-0 z-10 flex flex-col justify-between p-4 sm:p-6"
         >
           <div className="flex items-start justify-between gap-4">
-            <div data-anim>
+            {/* En móvil el panel es un bottom sheet (position: fixed). No se
+                envuelve con [data-anim] porque el transform de la animación de
+                entrada de GSAP rompería el posicionamiento fixed. */}
+            <div>
               <ControlPanel
                 params={params}
                 onChange={handleParamsChange}
@@ -134,6 +140,7 @@ export default function SimulationApp() {
                 show={showAnalysis}
                 thrusting={thrusting}
                 params={params}
+                onClose={handleCloseAnalysis}
               />
             </div>
           </div>
@@ -141,20 +148,20 @@ export default function SimulationApp() {
           <div className="flex items-end justify-between gap-4">
             <div
               data-anim
-              className="pointer-events-auto hidden rounded-xl border border-white/10 bg-zinc-900/60 px-4 py-3 text-xs backdrop-blur-md sm:block"
+              className="pointer-events-auto hidden rounded-xl border border-white/10 bg-zinc-900/60 px-4 py-3 text-xs backdrop-blur-md md:block"
             >
               <div className="flex items-center gap-2">
                 <span className="inline-block h-2.5 w-6 rounded-full bg-green-500" />
-                <span className="text-zinc-300">Reacción (empuje sobre el dron)</span>
+                <span className="text-zinc-300">Fuerza aplicada (F)</span>
               </div>
               <div className="mt-1.5 flex items-center gap-2">
                 <span className="inline-block h-2.5 w-6 rounded-full bg-red-500" />
-                <span className="text-zinc-300">Acción (gases expulsados)</span>
+                <span className="text-zinc-300">Gases expulsados</span>
               </div>
             </div>
             <div
               data-anim
-              className="pointer-events-none hidden text-right text-xs text-zinc-500 sm:block"
+              className="pointer-events-none hidden text-right text-xs text-zinc-500 md:block"
             >
               Arrastra para orbitar · Usa +/− para acercar
             </div>
@@ -182,12 +189,12 @@ export default function SimulationApp() {
               La física detrás del experimento
             </h2>
             <p data-card className="mt-4 text-zinc-300">
-              La <strong>Tercera Ley de Newton</strong> establece que para toda
-              acción existe una reacción de igual magnitud y sentido opuesto.
-              Cuando el dron expulsa propelente hacia abajo (la{" "}
-              <span className="text-red-400">acción</span>), el propelente empuja
-              al dron hacia arriba con la misma fuerza (la{" "}
-              <span className="text-green-400">reacción</span>).
+              La <strong>Segunda Ley de Newton</strong> (o Ley de la Dinámica)
+              establece que la aceleración de un objeto es directamente
+              proporcional a la fuerza neta que actúa sobre él, e inversamente
+              proporcional a su masa. En este entorno de gravedad cero, la fuerza
+              del propulsor genera una aceleración constante según la fórmula
+              a = F / m.
             </p>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -195,30 +202,32 @@ export default function SimulationApp() {
                 data-card
                 className="rounded-xl border border-white/10 bg-white/5 p-5"
               >
-                <h3 className="font-semibold text-cyan-300">Acción = Reacción</h3>
+                <h3 className="font-semibold text-cyan-300">Fuerza y Masa</h3>
                 <p className="mt-2 text-sm text-zinc-400">
-                  F<sub>gases</sub> = −F<sub>dron</sub>. Las fuerzas son iguales y
-                  opuestas, representadas por las flechas roja y verde.
+                  La fuerza neta acelera al dron; a mayor masa, mayor inercia y
+                  menor aceleración para la misma fuerza aplicada.
                 </p>
               </div>
               <div
                 data-card
                 className="rounded-xl border border-white/10 bg-white/5 p-5"
               >
-                <h3 className="font-semibold text-cyan-300">Aceleración</h3>
+                <h3 className="font-semibold text-cyan-300">
+                  Aceleración (a = F/m)
+                </h3>
                 <p className="mt-2 text-sm text-zinc-400">
-                  a = F / m. A mayor masa del dron, menor aceleración para la
-                  misma fuerza de eyección.
+                  La aceleración es directamente proporcional a la fuerza e
+                  inversamente proporcional a la masa del dron.
                 </p>
               </div>
               <div
                 data-card
                 className="rounded-xl border border-white/10 bg-white/5 p-5"
               >
-                <h3 className="font-semibold text-cyan-300">Gravedad cero</h3>
+                <h3 className="font-semibold text-cyan-300">Gravedad Cero</h3>
                 <p className="mt-2 text-sm text-zinc-400">
-                  Sin gravedad ni rozamiento, tras el encendido el dron mantiene
-                  su velocidad (Primera Ley de Newton).
+                  Sin gravedad ni rozamiento, la fuerza del propulsor es la única
+                  fuerza neta que actúa sobre el dron.
                 </p>
               </div>
             </div>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 import type { ComponentRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Stars, Grid } from "@react-three/drei";
+import { OrbitControls, Stars, Grid, Loader } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import Drone from "./Drone";
 import CameraRig from "./CameraRig";
@@ -33,9 +33,12 @@ export default function Scene({
   const droneYRef = useRef(0);
 
   return (
+    <>
     <Canvas
-      camera={{ position: [7, 4, 9], fov: DEFAULT_FOV }}
-      dpr={[1, 2]}
+      camera={{ position: [0, 2, 15], fov: DEFAULT_FOV }}
+      // Limitamos el DPR a 1.5x: en móviles de alta densidad renderizar a 3x
+      // dispara el consumo de GPU y el calentamiento sin ganancia visual real.
+      dpr={[1, 1.5]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       className="!fixed inset-0"
     >
@@ -62,18 +65,23 @@ export default function Scene({
         infiniteGrid
       />
 
-      {/* Mundo físico en gravedad cero (interpolado para suavizar el movimiento) */}
-      <Physics gravity={[0, 0, 0]} interpolate>
-        <Drone
-          params={params}
-          ignitionId={ignitionId}
-          resetId={resetId}
-          onTelemetry={onTelemetry}
-          onThrustingChange={onThrustingChange}
-          onFlightComplete={onFlightComplete}
-          droneYRef={droneYRef}
-        />
-      </Physics>
+      {/* Mundo físico en gravedad cero (interpolado para suavizar el movimiento).
+         El límite de Suspense vive aquí arriba (no dentro del RigidBody) para que
+         remontar el cuerpo al cambiar la masa no dispare ningún fallback: el GLB
+         ya está precargado en la caché de `useGLTF`. */}
+      <Suspense fallback={null}>
+        <Physics gravity={[0, 0, 0]} interpolate>
+          <Drone
+            params={params}
+            ignitionId={ignitionId}
+            resetId={resetId}
+            onTelemetry={onTelemetry}
+            onThrustingChange={onThrustingChange}
+            onFlightComplete={onFlightComplete}
+            droneYRef={droneYRef}
+          />
+        </Physics>
+      </Suspense>
 
       <CameraRig fov={fov} droneYRef={droneYRef} controlsRef={controlsRef} />
 
@@ -82,9 +90,31 @@ export default function Scene({
         enablePan={false}
         enableZoom={false}
         minDistance={4}
-        maxDistance={30}
+        // Holgado: con la cámara fija cerca del suelo y el punto de mira subiendo
+        // hasta Y=40, la distancia cámara→objetivo llega a ~41. Un máximo amplio
+        // evita que update() reposicione la cámara para respetar el límite.
+        maxDistance={80}
         makeDefault
       />
     </Canvas>
+
+    {/* Barra de progreso (estética cyberpunk) mientras se descarga/parsea el
+       GLB comprimido. Vive fuera del <Canvas> y se alimenta del <Suspense>
+       interno vía el `useProgress` global de drei. */}
+    <Loader
+      containerStyles={{ background: "rgba(5, 6, 10, 0.96)" }}
+      innerStyles={{ background: "#0a0f1e", width: "220px", height: "6px" }}
+      barStyles={{ background: "#22d3ee", height: "6px" }}
+      dataStyles={{
+        color: "#22d3ee",
+        fontSize: "0.8rem",
+        fontFamily: "ui-monospace, monospace",
+        letterSpacing: "0.1em",
+        marginTop: "0.85rem",
+        textShadow: "0 0 8px #22d3ee",
+      }}
+      dataInterpolation={(p) => `CARGANDO MODELO ${p.toFixed(0)}%`}
+    />
+    </>
   );
 }
