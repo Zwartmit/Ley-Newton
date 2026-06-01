@@ -147,7 +147,7 @@ export default function AnalysisPanel({
         <div data-row>
           <Line label="Fuerza" accent="#34d399">
             El propulsor aplicó una fuerza neta constante de{" "}
-            <span className="font-mono font-semibold text-white">
+            <span className="whitespace-nowrap font-mono font-semibold text-white">
               {num(ejectionForce, 0)} N
             </span>
             .
@@ -157,7 +157,7 @@ export default function AnalysisPanel({
         <div data-row>
           <Line label="Masa" accent="#22d3ee">
             El dron tiene una masa estructural fija de{" "}
-            <span className="font-mono font-semibold text-white">
+            <span className="whitespace-nowrap font-mono font-semibold text-white">
               {num(droneMass, 0)} kg
             </span>
             .
@@ -170,7 +170,7 @@ export default function AnalysisPanel({
             proporcional a la fuerza e inversamente proporcional a la masa. Esto
             genera una aceleración resultante de{" "}
             <span
-              className="font-mono font-bold text-fuchsia-300"
+              className="whitespace-nowrap font-mono font-bold text-fuchsia-300"
               style={{ textShadow: "0 0 10px rgba(232,121,249,0.7)" }}
             >
               {num(acceleration)} m/s²
