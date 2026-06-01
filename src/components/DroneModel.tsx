@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-const MODEL_URL = "/models/scene.gltf";
+const MODEL_URL = "/models/scene.glb";
 
 /** Dron compuesto con primitivas de Three.js (cuerpo + tobera). */
 export function PrimitiveDrone() {
@@ -48,8 +48,8 @@ export function PrimitiveDrone() {
 }
 
 /**
- * Carga el modelo GLTF del dron de forma imperativa con GLTFLoader.
- * Mientras carga (o si falla, p. ej. falta scene.bin) se muestra un dron
+ * Carga el modelo GLB del dron de forma imperativa con GLTFLoader.
+ * Mientras carga (o si falla, p. ej. el archivo no existe) se muestra un dron
  * compuesto con primitivas; al cargar correctamente se reemplaza por el modelo.
  */
 export default function DroneModel() {
@@ -65,7 +65,7 @@ export default function DroneModel() {
       },
       undefined,
       () => {
-        // No se pudo cargar el modelo (p. ej. falta scene.bin): usamos primitivas.
+        // No se pudo cargar el modelo (p. ej. archivo ausente): usamos primitivas.
         if (alive) setScene(null);
       },
     );
