@@ -3,7 +3,7 @@
 import { Suspense, useRef } from "react";
 import type { ComponentRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Stars, Grid } from "@react-three/drei";
+import { OrbitControls, Stars, Grid, Loader } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import Drone from "./Drone";
 import CameraRig from "./CameraRig";
@@ -33,9 +33,12 @@ export default function Scene({
   const droneYRef = useRef(0);
 
   return (
+    <>
     <Canvas
       camera={{ position: [0, 2, 15], fov: DEFAULT_FOV }}
-      dpr={[1, 2]}
+      // Limitamos el DPR a 1.5x: en móviles de alta densidad renderizar a 3x
+      // dispara el consumo de GPU y el calentamiento sin ganancia visual real.
+      dpr={[1, 1.5]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       className="!fixed inset-0"
     >
@@ -94,5 +97,24 @@ export default function Scene({
         makeDefault
       />
     </Canvas>
+
+    {/* Barra de progreso (estética cyberpunk) mientras se descarga/parsea el
+       GLB comprimido. Vive fuera del <Canvas> y se alimenta del <Suspense>
+       interno vía el `useProgress` global de drei. */}
+    <Loader
+      containerStyles={{ background: "rgba(5, 6, 10, 0.96)" }}
+      innerStyles={{ background: "#0a0f1e", width: "220px", height: "6px" }}
+      barStyles={{ background: "#22d3ee", height: "6px" }}
+      dataStyles={{
+        color: "#22d3ee",
+        fontSize: "0.8rem",
+        fontFamily: "ui-monospace, monospace",
+        letterSpacing: "0.1em",
+        marginTop: "0.85rem",
+        textShadow: "0 0 8px #22d3ee",
+      }}
+      dataInterpolation={(p) => `CARGANDO MODELO ${p.toFixed(0)}%`}
+    />
+    </>
   );
 }
