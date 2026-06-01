@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   },
   description:
     "Simulador interactivo en 3D para comprobar la Segunda Ley de Newton (Dinámica). Modifica la fuerza y la masa en gravedad cero y observa la aceleración en tiempo real.",
+  manifest: "/site.webmanifest",
   keywords: [
     "Física",
     "Segunda Ley de Newton",
