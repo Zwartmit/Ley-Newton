@@ -15,7 +15,7 @@ const MODEL_URL = "/models/scene.glb";
  */
 export default function DroneModel() {
   const { scene } = useGLTF(MODEL_URL);
-  return <Clone object={scene} scale={0.6} rotation={[Math.PI, 0, 0]} />;
+  return <Clone object={scene} scale={0.6} rotation={[Math.PI, Math.PI, 0]} />;
 }
 
 useGLTF.preload(MODEL_URL);
