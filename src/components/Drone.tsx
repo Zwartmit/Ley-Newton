@@ -10,12 +10,13 @@ import {
 import DroneModel from "./DroneModel";
 import ThrustArrows from "./ThrustArrows";
 import ExhaustParticles from "./ExhaustParticles";
+import type { SimParams, Telemetry } from "@/lib/types";
 import {
   BURN_SECONDS_PER_KG,
+  MAX_FRAME_DT,
+  TELEMETRY_INTERVAL,
   THRUST_AXIS,
-  type SimParams,
-  type Telemetry,
-} from "@/lib/types";
+} from "@/lib/physics";
 
 interface DroneProps {
   params: SimParams;
@@ -35,8 +36,9 @@ export default function Drone({
   const body = useRef<RapierRigidBody>(null);
   const [thrusting, setThrusting] = useState(false);
 
-  const burnStart = useRef(Number.NEGATIVE_INFINITY); // instante (s) de inicio del encendido
-  const prevSpeed = useRef(0);
+  const burning = useRef(false); // ¿hay encendido activo? (fuente de verdad de la física)
+  const burnElapsed = useRef(0); // tiempo (s) acumulado de encendido, integrado por frame
+  const prevAxialV = useRef(0); // componente de la velocidad sobre el eje de empuje
   const reportAcc = useRef(0); // acumulador para limitar la frecuencia de telemetría
 
   // El motor físico es la única fuente de verdad del estado de encendido: lo
@@ -48,7 +50,8 @@ export default function Drone({
   // Disparar el encendido cuando cambia ignitionId.
   useEffect(() => {
     if (ignitionId === 0 || !body.current) return;
-    burnStart.current = performance.now() / 1000;
+    burnElapsed.current = 0;
+    burning.current = true;
     setThrusting(true);
   }, [ignitionId]);
 
@@ -60,8 +63,9 @@ export default function Drone({
     rb.setLinvel({ x: 0, y: 0, z: 0 }, true);
     rb.setAngvel({ x: 0, y: 0, z: 0 }, true);
     rb.setRotation({ x: 0, y: 0, z: 0, w: 1 }, true);
-    burnStart.current = Number.NEGATIVE_INFINITY;
-    prevSpeed.current = 0;
+    burning.current = false;
+    burnElapsed.current = 0;
+    prevAxialV.current = 0;
     setThrusting(false);
     onTelemetry({ velocity: 0, acceleration: 0 });
   }, [resetId, onTelemetry]);
@@ -69,33 +73,38 @@ export default function Drone({
   useFrame((_, delta) => {
     const rb = body.current;
     if (!rb) return;
-    const dt = Math.min(delta, 0.05);
-    const now = performance.now() / 1000;
+    const dt = Math.min(delta, MAX_FRAME_DT);
     const burnDuration = params.propellantMass * BURN_SECONDS_PER_KG;
-    const isBurning = now - burnStart.current < burnDuration;
 
-    if (isBurning) {
-      // Reacción: impulso sobre el dron (J = F·dt) en la dirección de empuje.
-      const f = params.ejectionForce * dt;
-      rb.applyImpulse(
-        { x: THRUST_AXIS[0] * f, y: THRUST_AXIS[1] * f, z: THRUST_AXIS[2] * f },
-        true,
-      );
-      if (!thrusting) setThrusting(true);
-    } else if (thrusting) {
-      setThrusting(false);
+    if (burning.current) {
+      // El encendido se integra por frame (∫F·dt), de modo que el impulso total
+      // no depende de la tasa de frames y respeta los cambios de parámetros en vivo.
+      burnElapsed.current += dt;
+      if (burnElapsed.current < burnDuration) {
+        // Reacción: impulso sobre el dron (J = F·dt) en la dirección de empuje.
+        const f = params.ejectionForce * dt;
+        rb.applyImpulse(
+          { x: THRUST_AXIS[0] * f, y: THRUST_AXIS[1] * f, z: THRUST_AXIS[2] * f },
+          true,
+        );
+      } else {
+        burning.current = false;
+        setThrusting(false);
+      }
     }
 
-    // Telemetría: rapidez y aceleración instantánea.
+    // Telemetría: rapidez (módulo) y aceleración a lo largo del eje de empuje.
     const v = rb.linvel();
     const speed = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-    const accel = dt > 0 ? (speed - prevSpeed.current) / dt : 0;
-    prevSpeed.current = speed;
+    const axialV =
+      v.x * THRUST_AXIS[0] + v.y * THRUST_AXIS[1] + v.z * THRUST_AXIS[2];
+    const accel = dt > 0 ? (axialV - prevAxialV.current) / dt : 0;
+    prevAxialV.current = axialV;
 
     reportAcc.current += dt;
-    if (reportAcc.current >= 0.1) {
+    if (reportAcc.current >= TELEMETRY_INTERVAL) {
       reportAcc.current = 0;
-      onTelemetry({ velocity: speed, acceleration: Math.max(accel, 0) });
+      onTelemetry({ velocity: speed, acceleration: accel });
     }
   });
 
@@ -108,7 +117,7 @@ export default function Drone({
       linearDamping={0}
       angularDamping={0.6}
     >
-      <CuboidCollider args={[0.8, 0.45, 0.8]} mass={params.droneMass} />
+      <CuboidCollider args={[0.8, 0.35, 0.8]} mass={params.droneMass} />
       <DroneModel />
       <ThrustArrows visible={thrusting} magnitude={params.ejectionForce} />
       <ExhaustParticles active={thrusting} />

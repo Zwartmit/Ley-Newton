@@ -7,6 +7,12 @@
  * Solo se muestran mientras dura el encendido.
  */
 
+import {
+  ARROW_BASE_LENGTH,
+  ARROW_LENGTH_PER_NEWTON,
+  ARROW_MAX_LENGTH,
+} from "@/lib/physics";
+
 interface ArrowProps {
   color: string;
   /** +1 apunta hacia +Y, -1 hacia -Y. */
@@ -59,7 +65,10 @@ export default function ThrustArrows({
 }) {
   if (!visible) return null;
   // Escala la longitud visible según la fuerza, con límites razonables.
-  const length = Math.min(1.4 + magnitude * 0.012, 4);
+  const length = Math.min(
+    ARROW_BASE_LENGTH + magnitude * ARROW_LENGTH_PER_NEWTON,
+    ARROW_MAX_LENGTH,
+  );
   return (
     <group>
       {/* Reacción (empuje): verde, hacia arriba desde el cuerpo. */}

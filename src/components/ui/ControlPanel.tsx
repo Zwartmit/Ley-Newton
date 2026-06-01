@@ -11,11 +11,22 @@ interface SliderProps {
   step: number;
   onChange: (v: number) => void;
   hint?: string;
+  disabled?: boolean;
 }
 
-function Slider({ label, unit, value, min, max, step, onChange, hint }: SliderProps) {
+function Slider({
+  label,
+  unit,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+  hint,
+  disabled,
+}: SliderProps) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={`flex flex-col gap-1.5 ${disabled ? "opacity-50" : ""}`}>
       <div className="flex items-baseline justify-between">
         <label className="text-sm font-medium text-zinc-200">{label}</label>
         <span className="font-mono text-sm tabular-nums text-cyan-300">
@@ -28,8 +39,9 @@ function Slider({ label, unit, value, min, max, step, onChange, hint }: SliderPr
         max={max}
         step={step}
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-700 accent-cyan-400"
+        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-700 accent-cyan-400 disabled:cursor-not-allowed"
       />
       {hint ? <p className="text-xs text-zinc-500">{hint}</p> : null}
     </div>
@@ -94,6 +106,7 @@ export default function ControlPanel({
           step={1}
           onChange={(v) => set({ droneMass: v })}
           hint="Define la masa del cuerpo rígido (reinicia la nave)"
+          disabled={thrusting}
         />
       </div>
 

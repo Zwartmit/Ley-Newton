@@ -6,6 +6,7 @@ import gsap from "gsap";
 import Scene from "./Scene";
 import ControlPanel from "./ui/ControlPanel";
 import TelemetryPanel from "./ui/TelemetryPanel";
+import AnalysisPanel from "./ui/AnalysisPanel";
 import { DEFAULT_PARAMS, type SimParams, type Telemetry } from "@/lib/types";
 
 export default function SimulationApp() {
@@ -13,11 +14,13 @@ export default function SimulationApp() {
   const [ignitionId, setIgnitionId] = useState(0);
   const [resetId, setResetId] = useState(0);
   const [thrusting, setThrusting] = useState(false);
+  const [hasIgnited, setHasIgnited] = useState(false);
   const [telemetry, setTelemetry] = useState<Telemetry>({
     velocity: 0,
     acceleration: 0,
   });
 
+  const rootRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
 
@@ -33,11 +36,13 @@ export default function SimulationApp() {
 
   const handleIgnition = useCallback(() => {
     setIgnitionId((n) => n + 1);
+    setHasIgnited(true);
   }, []);
 
   const handleReset = useCallback(() => {
     setResetId((n) => n + 1);
     setTelemetry({ velocity: 0, acceleration: 0 });
+    setHasIgnited(false);
   }, []);
 
   // Animaciones de entrada con GSAP.
@@ -63,13 +68,13 @@ export default function SimulationApp() {
           delay: 0.6,
         });
       }
-    });
+    }, rootRef);
     return () => ctx.revert();
   }, []);
 
   return (
     <ReactLenis root>
-      <main className="relative">
+      <main ref={rootRef} className="relative">
         {/* Escena 3D (fondo fijo) */}
         <Scene
           params={params}
@@ -94,8 +99,15 @@ export default function SimulationApp() {
                 thrusting={thrusting}
               />
             </div>
-            <div data-anim>
-              <TelemetryPanel telemetry={telemetry} />
+            <div className="flex flex-col items-end gap-4">
+              <div data-anim>
+                <TelemetryPanel telemetry={telemetry} />
+              </div>
+              <AnalysisPanel
+                show={hasIgnited}
+                thrusting={thrusting}
+                params={params}
+              />
             </div>
           </div>
 

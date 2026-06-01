@@ -24,8 +24,8 @@ export default function Scene({
   return (
     <Canvas
       camera={{ position: [7, 4, 9], fov: 45 }}
-      dpr={1}
-      gl={{ antialias: false, powerPreference: "high-performance" }}
+      dpr={[1, 2]}
+      gl={{ antialias: true, powerPreference: "high-performance" }}
       className="!fixed inset-0"
     >
       <color attach="background" args={["#05060a"]} />
