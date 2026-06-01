@@ -32,7 +32,7 @@ export default function CanvasControls({
       {/* Zoom manual (la rueda del ratón queda libre para el scroll de la página).
           En móvil va arriba a la derecha, fuera del paso del bottom sheet; en
           escritorio, centrado al borde derecho. */}
-      <div className="absolute right-4 top-4 flex flex-col gap-2 md:right-6 md:top-1/2 md:-translate-y-1/2">
+      <div className="absolute right-4 top-4 z-30 flex flex-col gap-2 md:right-6 md:top-1/2 md:-translate-y-1/2">
         <button
           type="button"
           aria-label="Acercar"

@@ -10,6 +10,8 @@ interface AnalysisPanelProps {
   /** Encendido actualmente activo (resalta el panel). */
   thrusting: boolean;
   params: SimParams;
+  /** Cierra el panel explícitamente (botón ✕). */
+  onClose: () => void;
 }
 
 function Line({
@@ -42,6 +44,7 @@ export default function AnalysisPanel({
   show,
   thrusting,
   params,
+  onClose,
 }: AnalysisPanelProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const { propellantMass, ejectionForce, droneMass } = params;
@@ -91,14 +94,15 @@ export default function AnalysisPanel({
   return (
     <>
       {/* Fondo del modal (solo móvil): desenfoque intenso sobre toda la escena.
-          Es puramente visual (pointer-events-none) para no atrapar al usuario. */}
+          Captura los clics (pointer-events-auto) sin cerrar: el usuario solo
+          puede cerrar con ✕ o disparando un nuevo encendido. */}
       <div
-        className="pointer-events-none fixed inset-0 z-20 bg-black/50 backdrop-blur-md md:hidden"
+        className="pointer-events-auto fixed inset-0 z-40 bg-black/50 backdrop-blur-md md:hidden"
         aria-hidden
       />
       <div
         ref={rootRef}
-        className={`pointer-events-auto fixed left-1/2 top-1/2 z-30 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border bg-zinc-950/80 p-4 shadow-2xl backdrop-blur-2xl transition-colors duration-500 md:static md:left-auto md:top-auto md:z-auto md:w-[22rem] md:max-w-[calc(100vw-2rem)] md:translate-x-0 md:translate-y-0 md:bg-zinc-950/70 md:p-5 md:backdrop-blur-xl ${
+        className={`pointer-events-auto fixed left-1/2 top-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border bg-zinc-950/80 p-4 shadow-2xl backdrop-blur-2xl transition-colors duration-500 md:relative md:left-auto md:top-auto md:z-50 md:w-[22rem] md:max-w-[calc(100vw-2rem)] md:translate-x-0 md:translate-y-0 md:bg-zinc-950/70 md:p-5 md:backdrop-blur-xl ${
           thrusting
             ? "border-fuchsia-400/60 shadow-[0_0_28px_-4px_rgba(232,121,249,0.55)]"
             : "border-cyan-400/30 shadow-[0_0_22px_-8px_rgba(34,211,238,0.5)]"
@@ -111,22 +115,32 @@ export default function AnalysisPanel({
         }`}
       />
 
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="font-mono text-sm font-bold uppercase tracking-[0.25em] text-cyan-300">
           Análisis del Sistema
         </h2>
-        <span
-          className={`flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-widest ${
-            thrusting ? "text-fuchsia-300" : "text-zinc-500"
-          }`}
-        >
+        <div className="flex items-center gap-2.5">
           <span
-            className={`inline-block h-2 w-2 rounded-full ${
-              thrusting ? "animate-pulse bg-fuchsia-400" : "bg-zinc-600"
+            className={`flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-widest ${
+              thrusting ? "text-fuchsia-300" : "text-zinc-500"
             }`}
-          />
-          {thrusting ? "Activo" : "En espera"}
-        </span>
+          >
+            <span
+              className={`inline-block h-2 w-2 rounded-full ${
+                thrusting ? "animate-pulse bg-fuchsia-400" : "bg-zinc-600"
+              }`}
+            />
+            {thrusting ? "Activo" : "En espera"}
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Cerrar análisis"
+            className="-mr-1 flex h-6 w-6 items-center justify-center rounded-md font-mono text-base leading-none text-zinc-400 transition-all duration-200 hover:text-red-500 hover:[text-shadow:0_0_10px_rgba(239,68,68,0.8)]"
+          >
+            ✕
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2.5 text-sm">

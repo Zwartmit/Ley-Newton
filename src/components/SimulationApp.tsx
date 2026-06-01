@@ -40,7 +40,8 @@ export default function SimulationApp() {
     [],
   );
 
-  // El panel queda oculto al iniciar el vuelo; solo reaparece al concluir.
+  // El panel queda oculto al iniciar el vuelo; solo reaparece al concluir. Un
+  // nuevo encendido es una de las dos únicas formas de cerrarlo (junto con ✕).
   const handleIgnition = useCallback(() => {
     setIgnitionId((n) => n + 1);
     setShowAnalysis(false);
@@ -49,14 +50,16 @@ export default function SimulationApp() {
   const handleReset = useCallback(() => {
     setResetId((n) => n + 1);
     setTelemetry({ velocity: 0, acceleration: 0 });
-    setShowAnalysis(false);
   }, []);
 
-  // Cambiar parámetros invalida el informe anterior: se oculta el panel.
+  // Cambiar parámetros ya no cierra el panel: permanece hasta que el usuario
+  // pulse ✕ o dispare un nuevo encendido.
   const handleParamsChange = useCallback((next: SimParams) => {
     setParams(next);
-    setShowAnalysis(false);
   }, []);
+
+  // Cierre explícito del panel (botón ✕).
+  const handleCloseAnalysis = useCallback(() => setShowAnalysis(false), []);
 
   // El vuelo concluyó (el dron superó la altitud máxima y se reinició solo).
   const handleFlightComplete = useCallback(() => setShowAnalysis(true), []);
@@ -137,6 +140,7 @@ export default function SimulationApp() {
                 show={showAnalysis}
                 thrusting={thrusting}
                 params={params}
+                onClose={handleCloseAnalysis}
               />
             </div>
           </div>
