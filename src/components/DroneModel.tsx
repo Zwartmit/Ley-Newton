@@ -76,7 +76,7 @@ export default function DroneModel() {
 
   if (scene) {
     return (
-      <primitive object={scene} scale={0.6} rotation={[-Math.PI / 2, 0, 0]} />
+      <primitive object={scene} scale={0.6} rotation={[Math.PI, 0, 0]} />
     );
   }
   return <PrimitiveDrone />;
