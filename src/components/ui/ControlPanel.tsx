@@ -77,10 +77,10 @@ export default function ControlPanel({
     <div className="pointer-events-auto fixed inset-x-0 bottom-0 z-20 max-h-[75dvh] w-full overflow-y-auto rounded-t-2xl border border-white/10 bg-zinc-900/80 p-4 shadow-2xl backdrop-blur-md md:static md:inset-auto md:z-auto md:max-h-[calc(100dvh-2rem)] md:w-[20rem] md:max-w-[calc(100vw-2rem)] md:rounded-2xl md:p-5">
       <div className="mb-2 md:mb-4">
         <h1 className="text-sm font-semibold text-white md:text-lg">
-          Tercera Ley de Newton
+          Segunda Ley de Newton
         </h1>
         <p className="hidden text-xs text-zinc-400 md:block">
-          Acción y reacción en gravedad cero
+          Relación entre Fuerza, Masa y Aceleración
         </p>
       </div>
 
@@ -105,7 +105,7 @@ export default function ControlPanel({
           max={120}
           step={1}
           onChange={(v) => set({ ejectionForce: v })}
-          hint="Magnitud de la acción (gases expulsados)"
+          hint="Magnitud de la fuerza neta aplicada"
         />
         <Slider
           label="Masa del dron"

@@ -38,7 +38,7 @@ function Line({
 
 /**
  * "Análisis del Sistema": panel educativo con estética cyberpunk que explica
- * en tiempo real la Tercera Ley de Newton inyectando las variables de estado.
+ * en tiempo real la Segunda Ley de Newton inyectando las variables de estado.
  */
 export default function AnalysisPanel({
   show,
@@ -47,7 +47,7 @@ export default function AnalysisPanel({
   onClose,
 }: AnalysisPanelProps) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const { propellantMass, ejectionForce, droneMass } = params;
+  const { ejectionForce, droneMass } = params;
   const acceleration = droneMass > 0 ? ejectionForce / droneMass : 0;
 
   // Animación de entrada al revelarse el panel.
@@ -145,12 +145,8 @@ export default function AnalysisPanel({
 
       <div className="flex flex-col gap-2.5 text-sm">
         <div data-row>
-          <Line label="Acción" accent="#f87171">
-            El propulsor expulsó{" "}
-            <span className="font-mono font-semibold text-white">
-              {num(propellantMass, 1)} kg
-            </span>{" "}
-            de gas con una fuerza de{" "}
+          <Line label="Fuerza" accent="#34d399">
+            El propulsor aplicó una fuerza neta constante de{" "}
             <span className="font-mono font-semibold text-white">
               {num(ejectionForce, 0)} N
             </span>
@@ -159,23 +155,20 @@ export default function AnalysisPanel({
         </div>
 
         <div data-row>
-          <Line label="Reacción" accent="#34d399">
-            Según la Tercera Ley de Newton, se generó una fuerza de empuje
-            idéntica de{" "}
+          <Line label="Masa" accent="#22d3ee">
+            El dron tiene una masa estructural fija de{" "}
             <span className="font-mono font-semibold text-white">
-              {num(ejectionForce, 0)} N
-            </span>{" "}
-            en dirección opuesta sobre la estructura.
+              {num(droneMass, 0)} kg
+            </span>
+            .
           </Line>
         </div>
 
         <div data-row>
-          <Line label="Cinemática" accent="#22d3ee">
-            Al tener el dron una masa fija de{" "}
-            <span className="font-mono font-semibold text-white">
-              {num(droneMass, 0)} kg
-            </span>
-            , esta fuerza de reacción ha generado una aceleración de{" "}
+          <Line label="Cinemática" accent="#e879f9">
+            Según la Segunda Ley de Newton, la aceleración es directamente
+            proporcional a la fuerza e inversamente proporcional a la masa. Esto
+            genera una aceleración resultante de{" "}
             <span
               className="font-mono font-bold text-fuchsia-300"
               style={{ textShadow: "0 0 10px rgba(232,121,249,0.7)" }}

@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tercera Ley de Newton — Simulador 3D",
+  title: "Segunda Ley de Newton — Simulador 3D",
   description:
-    "Simulación interactiva de física 3D que demuestra la Tercera Ley de Newton (acción y reacción) en un entorno de gravedad cero.",
+    "Simulación interactiva de física 3D que demuestra la Segunda Ley de Newton (a = F/m) en un entorno de gravedad cero.",
 };
 
 export default function RootLayout({

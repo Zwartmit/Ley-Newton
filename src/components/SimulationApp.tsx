@@ -152,11 +152,11 @@ export default function SimulationApp() {
             >
               <div className="flex items-center gap-2">
                 <span className="inline-block h-2.5 w-6 rounded-full bg-green-500" />
-                <span className="text-zinc-300">Reacción (empuje sobre el dron)</span>
+                <span className="text-zinc-300">Fuerza aplicada (F)</span>
               </div>
               <div className="mt-1.5 flex items-center gap-2">
                 <span className="inline-block h-2.5 w-6 rounded-full bg-red-500" />
-                <span className="text-zinc-300">Acción (gases expulsados)</span>
+                <span className="text-zinc-300">Gases expulsados</span>
               </div>
             </div>
             <div
@@ -189,12 +189,12 @@ export default function SimulationApp() {
               La física detrás del experimento
             </h2>
             <p data-card className="mt-4 text-zinc-300">
-              La <strong>Tercera Ley de Newton</strong> establece que para toda
-              acción existe una reacción de igual magnitud y sentido opuesto.
-              Cuando el dron expulsa propelente hacia abajo (la{" "}
-              <span className="text-red-400">acción</span>), el propelente empuja
-              al dron hacia arriba con la misma fuerza (la{" "}
-              <span className="text-green-400">reacción</span>).
+              La <strong>Segunda Ley de Newton</strong> (o Ley de la Dinámica)
+              establece que la aceleración de un objeto es directamente
+              proporcional a la fuerza neta que actúa sobre él, e inversamente
+              proporcional a su masa. En este entorno de gravedad cero, la fuerza
+              del propulsor genera una aceleración constante según la fórmula
+              a = F / m.
             </p>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -202,30 +202,32 @@ export default function SimulationApp() {
                 data-card
                 className="rounded-xl border border-white/10 bg-white/5 p-5"
               >
-                <h3 className="font-semibold text-cyan-300">Acción = Reacción</h3>
+                <h3 className="font-semibold text-cyan-300">Fuerza y Masa</h3>
                 <p className="mt-2 text-sm text-zinc-400">
-                  F<sub>gases</sub> = −F<sub>dron</sub>. Las fuerzas son iguales y
-                  opuestas, representadas por las flechas roja y verde.
+                  La fuerza neta acelera al dron; a mayor masa, mayor inercia y
+                  menor aceleración para la misma fuerza aplicada.
                 </p>
               </div>
               <div
                 data-card
                 className="rounded-xl border border-white/10 bg-white/5 p-5"
               >
-                <h3 className="font-semibold text-cyan-300">Aceleración</h3>
+                <h3 className="font-semibold text-cyan-300">
+                  Aceleración (a = F/m)
+                </h3>
                 <p className="mt-2 text-sm text-zinc-400">
-                  a = F / m. A mayor masa del dron, menor aceleración para la
-                  misma fuerza de eyección.
+                  La aceleración es directamente proporcional a la fuerza e
+                  inversamente proporcional a la masa del dron.
                 </p>
               </div>
               <div
                 data-card
                 className="rounded-xl border border-white/10 bg-white/5 p-5"
               >
-                <h3 className="font-semibold text-cyan-300">Gravedad cero</h3>
+                <h3 className="font-semibold text-cyan-300">Gravedad Cero</h3>
                 <p className="mt-2 text-sm text-zinc-400">
-                  Sin gravedad ni rozamiento, tras el encendido el dron mantiene
-                  su velocidad (Primera Ley de Newton).
+                  Sin gravedad ni rozamiento, la fuerza del propulsor es la única
+                  fuerza neta que actúa sobre el dron.
                 </p>
               </div>
             </div>
