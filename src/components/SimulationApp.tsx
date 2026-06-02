@@ -23,6 +23,10 @@ export default function SimulationApp() {
   const [ignitionId, setIgnitionId] = useState(0);
   const [resetId, setResetId] = useState(0);
   const [thrusting, setThrusting] = useState(false);
+  // El cohete está "en vuelo" desde que se enciende hasta que se reinicia
+  // (auto al superar la altura máxima, o manual con Reiniciar). Mientras dure,
+  // no se puede volver a encender ni cambiar los parámetros.
+  const [inFlight, setInFlight] = useState(false);
   // El panel de análisis solo se revela cuando concluye el vuelo (auto-reinicio).
   const [showAnalysis, setShowAnalysis] = useState(false);
   // Instantánea congelada de fuerza/masa/aceleración al concluir el vuelo: el
@@ -52,11 +56,13 @@ export default function SimulationApp() {
   // nuevo encendido es una de las dos únicas formas de cerrarlo (junto con ✕).
   const handleIgnition = useCallback(() => {
     setIgnitionId((n) => n + 1);
+    setInFlight(true);
     setShowAnalysis(false);
   }, []);
 
   const handleReset = useCallback(() => {
     setResetId((n) => n + 1);
+    setInFlight(false);
     setTelemetry({ velocity: 0, acceleration: 0 });
   }, []);
 
@@ -81,6 +87,7 @@ export default function SimulationApp() {
       });
       return current;
     });
+    setInFlight(false);
     setShowAnalysis(true);
   }, []);
 
@@ -150,6 +157,7 @@ export default function SimulationApp() {
                 onIgnition={handleIgnition}
                 onReset={handleReset}
                 thrusting={thrusting}
+                inFlight={inFlight}
               />
             </div>
             <div className="flex flex-col items-end gap-4">
