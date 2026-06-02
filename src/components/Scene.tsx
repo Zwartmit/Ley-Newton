@@ -36,19 +36,26 @@ export default function Scene({
     <>
     <Canvas
       camera={{ position: [0, 2, 15], fov: DEFAULT_FOV }}
-      // Limitamos el DPR a 1.5x: en móviles de alta densidad renderizar a 3x
-      // dispara el consumo de GPU y el calentamiento sin ganancia visual real.
-      dpr={[1, 1.5]}
-      gl={{ antialias: true, powerPreference: "high-performance" }}
+      // Cap estricto del DPR a 1.2x: renderizar a 2x/3x en móviles de alta
+      // densidad colapsa la GPU sin ganancia visual real. Sin sombras.
+      dpr={[1, 1.2]}
+      shadows={false}
+      // antialias apagado (innecesario en pantallas densas) + alto rendimiento.
+      gl={{ antialias: false, powerPreference: "high-performance" }}
       className="!fixed inset-0"
     >
       <color attach="background" args={["#05060a"]} />
       <fog attach="fog" args={["#05060a", 18, 45]} />
 
-      {/* Iluminación */}
+      {/* Iluminación (sin sombras: entorno espacial oscuro, no calculamos mapas). */}
       <ambientLight intensity={0.5} />
-      <directionalLight position={[6, 10, 6]} intensity={2.2} />
-      <directionalLight position={[-8, -4, -6]} intensity={0.5} color="#60a5fa" />
+      <directionalLight position={[6, 10, 6]} intensity={2.2} castShadow={false} />
+      <directionalLight
+        position={[-8, -4, -6]}
+        intensity={0.5}
+        color="#60a5fa"
+        castShadow={false}
+      />
 
       {/* Ambiente espacial (vacío) */}
       <Stars radius={80} depth={40} count={1500} factor={4} fade speed={0.5} />
