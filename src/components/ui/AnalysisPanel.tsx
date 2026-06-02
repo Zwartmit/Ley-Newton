@@ -84,7 +84,12 @@ export default function AnalysisPanel({
 
   if (!show || !snapshot) return null;
 
-  const { force: ejectionForce, mass: droneMass, acceleration } = snapshot;
+  const {
+    force: ejectionForce,
+    mass: droneMass,
+    acceleration,
+    velocity,
+  } = snapshot;
 
   const num = (n: number, d = 2) =>
     n.toLocaleString("es", {
@@ -177,6 +182,19 @@ export default function AnalysisPanel({
               {num(acceleration)} m/s²
             </span>
             .
+          </Line>
+        </div>
+
+        <div data-row>
+          <Line label="Velocidad" accent="#facc15">
+            El cohete alcanzó una rapidez de{" "}
+            <span
+              className="whitespace-nowrap font-mono font-bold text-yellow-300"
+              style={{ textShadow: "0 0 10px rgba(250,204,21,0.7)" }}
+            >
+              {num(velocity)} m/s
+            </span>{" "}
+            al final del encendido y la conservó en gravedad cero (Primera Ley).
           </Line>
         </div>
       </div>
