@@ -94,7 +94,8 @@ export default function ControlPanel({
           max={8}
           step={0.5}
           onChange={(v) => set({ propellantMass: v })}
-          hint="Más propelente = encendido más largo"
+          hint="Más propelente = encendido más largo (no cambia la aceleración)"
+          disabled={thrusting}
         />
         <Slider
           label="Fuerza de eyección"
@@ -105,7 +106,8 @@ export default function ControlPanel({
           max={120}
           step={1}
           onChange={(v) => set({ ejectionForce: v })}
-          hint="Magnitud de la fuerza neta aplicada"
+          hint="Mayor fuerza → mayor aceleración (a = F/m)"
+          disabled={thrusting}
         />
         <Slider
           label="Masa del cohete"
@@ -116,7 +118,7 @@ export default function ControlPanel({
           max={40}
           step={1}
           onChange={(v) => set({ droneMass: v })}
-          hint="Define la masa del cuerpo rígido (reinicia el cohete)"
+          hint="Mayor masa → menor aceleración (a = F/m). Al cambiarla, el cohete vuelve a su posición inicial."
           disabled={thrusting}
         />
       </div>
