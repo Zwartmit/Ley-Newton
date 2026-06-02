@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import { useFrame } from "@react-three/fiber";
 import {
   RigidBody,
@@ -8,6 +15,7 @@ import {
   type RapierRigidBody,
 } from "@react-three/rapier";
 import DroneModel from "./DroneModel";
+import DroneLoader from "./DroneLoader";
 import ThrustArrows from "./ThrustArrows";
 import ExhaustParticles from "./ExhaustParticles";
 import type { SimParams, Telemetry } from "@/lib/types";
@@ -142,7 +150,12 @@ export default function Drone({
       angularDamping={0.6}
     >
       <CuboidCollider args={[0.8, 0.35, 0.8]} mass={params.droneMass} />
-      <DroneModel />
+      {/* El Suspense envuelve SOLO el GLB: el resto de la escena (UI, estrellas,
+         grid, controles) ya está visible. En remonts por cambio de masa el
+         modelo viene de la caché de `useGLTF`, así que no se ve el spinner. */}
+      <Suspense fallback={<DroneLoader />}>
+        <DroneModel />
+      </Suspense>
       <ThrustArrows visible={thrusting} magnitude={params.ejectionForce} />
       <ExhaustParticles active={thrusting} />
     </RigidBody>
