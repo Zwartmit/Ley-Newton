@@ -10,7 +10,7 @@ dron (`a = F / m`). Vectores de fuerza y un sistema de partículas visualizan el
 efecto, mientras un panel de telemetría muestra velocidad y aceleración en tiempo
 real y un panel de "Análisis del Sistema" resume el resultado al concluir el vuelo.
 
-Producción: <https://leynewton.devmit-tech.com>
+Demo: <https://leynewton.devmit-tech.com>
 
 ## Stack
 
