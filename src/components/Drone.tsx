@@ -33,9 +33,9 @@ interface DroneProps {
   resetId: number;
   onTelemetry: (t: Telemetry) => void;
   onThrustingChange: (thrusting: boolean) => void;
-  /** Se invoca cuando el dron supera la altitud máxima y se reinicia solo. */
+  /** Se invoca cuando el cohete supera la altitud máxima y se reinicia solo. */
   onFlightComplete: () => void;
-  /** Ref compartida con la altura (Y) del dron para el seguimiento de cámara. */
+  /** Ref compartida con la altura (Y) del cohete para el seguimiento de cámara. */
   droneYRef: RefObject<number>;
 }
 
@@ -70,7 +70,7 @@ export default function Drone({
     setThrusting(true);
   }, [ignitionId]);
 
-  // Devuelve el dron al origen con la velocidad anulada y limpia el estado físico.
+  // Devuelve el cohete al origen con la velocidad anulada y limpia el estado físico.
   const resetBody = useCallback(() => {
     const rb = body.current;
     if (!rb) return;
@@ -102,7 +102,7 @@ export default function Drone({
       // no depende de la tasa de frames y respeta los cambios de parámetros en vivo.
       burnElapsed.current += dt;
       if (burnElapsed.current < burnDuration) {
-        // Reacción: impulso sobre el dron (J = F·dt) en la dirección de empuje.
+        // Reacción: impulso sobre el cohete (J = F·dt) en la dirección de empuje.
         const f = params.ejectionForce * dt;
         rb.applyImpulse(
           { x: THRUST_AXIS[0] * f, y: THRUST_AXIS[1] * f, z: THRUST_AXIS[2] * f },

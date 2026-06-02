@@ -3,14 +3,14 @@ export interface SimParams {
   propellantMass: number;
   /** Fuerza de eyección del propelente (N). Magnitud de la acción. */
   ejectionForce: number;
-  /** Masa de la nave/dron (kg). Define la masa del RigidBody. */
+  /** Masa del cohete (kg). Define la masa del RigidBody. */
   droneMass: number;
 }
 
 export interface Telemetry {
-  /** Rapidez actual del dron (m/s). */
+  /** Rapidez actual del cohete (m/s). */
   velocity: number;
-  /** Aceleración instantánea del dron (m/s²). */
+  /** Aceleración instantánea del cohete (m/s²). */
   acceleration: number;
 }
 
@@ -27,7 +27,7 @@ export interface IgnitionSignal {
 export interface AnalysisSnapshot {
   /** Fuerza de eyección (N) al concluir el vuelo. */
   force: number;
-  /** Masa del dron (kg) al concluir el vuelo. */
+  /** Masa del cohete (kg) al concluir el vuelo. */
   mass: number;
   /** Aceleración resultante (m/s²) = force / mass. */
   acceleration: number;

@@ -69,7 +69,7 @@ export default function SimulationApp() {
   // Cierre explícito del panel (botón ✕).
   const handleCloseAnalysis = useCallback(() => setShowAnalysis(false), []);
 
-  // El vuelo concluyó (el dron superó la altitud máxima y se reinició solo).
+  // El vuelo concluyó (el cohete superó la altitud máxima y se reinició solo).
   // Congelamos los valores actuales en una instantánea para el informe.
   const handleFlightComplete = useCallback(() => {
     setParams((current) => {
@@ -235,7 +235,7 @@ export default function SimulationApp() {
                 className="rounded-xl border border-white/10 bg-white/5 p-5"
               >
                 <h3 className="font-semibold text-cyan-300">
-                  Masa del dron (Inercia)
+                  Masa del cohete (Inercia)
                 </h3>
                 <p className="mt-2 text-sm text-zinc-400">
                   Representa la resistencia al cambio de movimiento. A mayor masa
@@ -260,7 +260,7 @@ export default function SimulationApp() {
 
             <p data-card className="mt-10 text-sm text-zinc-500">
               Ajusta los parámetros y pulsa <strong>Ignición</strong> para lanzar
-              el dron. Usa <strong>Reiniciar</strong> para devolverlo al centro.
+              el cohete. Usa <strong>Reiniciar</strong> para devolverlo al centro.
             </p>
           </div>
         </section>

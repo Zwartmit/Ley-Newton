@@ -10,7 +10,7 @@ type OrbitControlsRef = ComponentRef<typeof OrbitControls>;
 interface CameraRigProps {
   /** Campo de visión objetivo (grados) controlado por los botones de zoom. */
   fov: number;
-  /** Altura (Y) actual del dron para el seguimiento dinámico. */
+  /** Altura (Y) actual del cohete para el seguimiento dinámico. */
   droneYRef: RefObject<number>;
   controlsRef: RefObject<OrbitControlsRef | null>;
 }
@@ -18,9 +18,9 @@ interface CameraRigProps {
 /**
  * Ajusta la cámara fuera del ciclo de React. La cámara permanece FIJA cerca del
  * suelo; en lugar de trasladarla, se interpola el punto de mira (`target`) de los
- * OrbitControls hacia la altura del dron, de modo que la cámara se inclina hacia
+ * OrbitControls hacia la altura del cohete, de modo que la cámara se inclina hacia
  * arriba para seguir el despegue (como un lanzamiento real) y regresa al centro
- * cuando el dron se reinicia. También suaviza el zoom (FOV).
+ * cuando el cohete se reinicia. También suaviza el zoom (FOV).
  */
 export default function CameraRig({
   fov,
@@ -42,7 +42,7 @@ export default function CameraRig({
 
     const controls = controlsRef.current;
     if (controls) {
-      // La cámara no se mueve: solo el punto de mira sube con el dron (0, Y, 0)
+      // La cámara no se mueve: solo el punto de mira sube con el cohete (0, Y, 0)
       // y vuelve a (0, 0, 0) al reiniciarse, inclinando la vista hacia arriba.
       controls.target.x += (0 - controls.target.x) * k;
       controls.target.y += (droneY - controls.target.y) * k;

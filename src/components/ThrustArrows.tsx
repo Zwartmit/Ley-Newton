@@ -3,7 +3,7 @@
 /**
  * Vectores 3D de acción y reacción (Tercera Ley de Newton).
  * - Flecha ROJA: acción (gases expulsados hacia abajo, -Y).
- * - Flecha VERDE: reacción (empuje sobre el dron hacia arriba, +Y).
+ * - Flecha VERDE: reacción (empuje sobre el cohete hacia arriba, +Y).
  * Solo se muestran mientras dura el encendido.
  */
 
