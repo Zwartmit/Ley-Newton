@@ -122,7 +122,7 @@ export default function ControlPanel({
           max={40}
           step={1}
           onChange={(v) => set({ droneMass: v })}
-          hint="Mayor masa → menor aceleración (a = F/m). Al cambiarla, el cohete vuelve a su posición inicial."
+          hint="Mayor masa → menor aceleración (a = F/m)"
           disabled={inFlight}
         />
       </div>
