@@ -267,6 +267,26 @@ export default function SimulationApp() {
               </div>
             </div>
 
+            <div
+              data-card
+              className="mt-6 rounded-xl border border-amber-400/30 bg-amber-400/5 p-5"
+            >
+              <h3 className="font-semibold text-amber-300">
+                Nota: modelo simplificado (masa constante)
+              </h3>
+              <p className="mt-2 text-sm text-zinc-400">
+                Esta simulación usa una masa <strong>constante</strong>, por lo
+                que con una fuerza fija la aceleración también es constante
+                (a = F/m). Un cohete real tiene <strong>masa variable</strong>:
+                al quemar combustible pierde masa, así que con el mismo empuje su
+                aceleración <strong>aumenta</strong> con el tiempo (a = T/m(t)),
+                comportamiento descrito por la{" "}
+                <strong>ecuación de Tsiolkovsky</strong>. Aquí el propelente solo
+                define la duración del encendido, no la masa, y se omiten la
+                gravedad y la resistencia del aire.
+              </p>
+            </div>
+
             <p data-card className="mt-10 text-sm text-zinc-500">
               Ajusta los parámetros y pulsa <strong>Ignición</strong> para lanzar
               el cohete. Usa <strong>Reiniciar</strong> para devolverlo al centro.
