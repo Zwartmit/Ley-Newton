@@ -18,7 +18,7 @@ export const TELEMETRY_INTERVAL = 0.1;
 /** Número de partículas del emisor de escape. */
 export const EXHAUST_PARTICLE_COUNT = 120;
 
-/** Posición de la tobera respecto al dron (m). */
+/** Posición de la tobera respecto al cohete (m). */
 export const NOZZLE_Y = -0.95;
 
 /** Escalado visual de las flechas de fuerza en función de la magnitud (N). */

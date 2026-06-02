@@ -108,15 +108,15 @@ export default function ControlPanel({
           hint="Magnitud de la fuerza neta aplicada"
         />
         <Slider
-          label="Masa del dron"
-          shortLabel="Masa dron"
+          label="Masa del cohete"
+          shortLabel="Masa cohete"
           unit="kg"
           value={params.droneMass}
           min={4}
           max={40}
           step={1}
           onChange={(v) => set({ droneMass: v })}
-          hint="Define la masa del cuerpo rígido (reinicia la nave)"
+          hint="Define la masa del cuerpo rígido (reinicia el cohete)"
           disabled={thrusting}
         />
       </div>

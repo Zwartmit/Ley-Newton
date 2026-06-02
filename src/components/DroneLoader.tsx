@@ -4,7 +4,7 @@ import { Html } from "@react-three/drei";
 
 /**
  * Fallback de Suspense que se muestra SOLO mientras se descarga/parsea el GLB
- * del dron. Se renderiza con `<Html center>` (portal DOM de drei) en el centro
+ * del cohete. Se renderiza con `<Html center>` (portal DOM de drei) en el centro
  * de la escena, así el resto del canvas (estrellas, grid, controles) ya está
  * visible detrás. Spinner cyberpunk con Tailwind.
  */

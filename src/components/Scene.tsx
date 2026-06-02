@@ -74,7 +74,7 @@ export default function Scene({
       {/* Mundo físico en gravedad cero (interpolado para suavizar el movimiento).
          No hay Suspense aquí: el límite vive dentro de `Drone`, envolviendo solo
          el GLB, para que la escena (estrellas, grid, controles) renderice al
-         instante y solo el dron muestre el spinner mientras carga. */}
+         instante y solo el cohete muestre el spinner mientras carga. */}
       <Physics gravity={[0, 0, 0]} interpolate>
         <Drone
           params={params}

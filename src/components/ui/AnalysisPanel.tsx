@@ -157,7 +157,7 @@ export default function AnalysisPanel({
 
         <div data-row>
           <Line label="Masa" accent="#22d3ee">
-            El dron tiene una masa estructural fija de{" "}
+            El cohete tiene una masa estructural fija de{" "}
             <span className="whitespace-nowrap font-mono font-semibold text-white">
               {num(droneMass, 0)} kg
             </span>
