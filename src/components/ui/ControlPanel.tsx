@@ -61,7 +61,10 @@ interface ControlPanelProps {
   onChange: (params: SimParams) => void;
   onIgnition: () => void;
   onReset: () => void;
+  /** Hay un encendido activo (la quema en curso). */
   thrusting: boolean;
+  /** El cohete está en vuelo (desde la ignición hasta que se reinicia). */
+  inFlight: boolean;
 }
 
 export default function ControlPanel({
@@ -70,6 +73,7 @@ export default function ControlPanel({
   onIgnition,
   onReset,
   thrusting,
+  inFlight,
 }: ControlPanelProps) {
   const set = (patch: Partial<SimParams>) => onChange({ ...params, ...patch });
 
@@ -95,7 +99,7 @@ export default function ControlPanel({
           step={0.5}
           onChange={(v) => set({ propellantMass: v })}
           hint="Más propelente = encendido más largo (no cambia la aceleración)"
-          disabled={thrusting}
+          disabled={inFlight}
         />
         <Slider
           label="Fuerza de eyección"
@@ -107,7 +111,7 @@ export default function ControlPanel({
           step={1}
           onChange={(v) => set({ ejectionForce: v })}
           hint="Mayor fuerza → mayor aceleración (a = F/m)"
-          disabled={thrusting}
+          disabled={inFlight}
         />
         <Slider
           label="Masa del cohete"
@@ -119,17 +123,17 @@ export default function ControlPanel({
           step={1}
           onChange={(v) => set({ droneMass: v })}
           hint="Mayor masa → menor aceleración (a = F/m). Al cambiarla, el cohete vuelve a su posición inicial."
-          disabled={thrusting}
+          disabled={inFlight}
         />
       </div>
 
       <div className="mt-3 flex flex-col gap-2 md:mt-5 md:flex-row md:gap-3">
         <button
           onClick={onIgnition}
-          disabled={thrusting}
+          disabled={inFlight}
           className="w-full rounded-xl bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:from-orange-400 hover:to-red-400 disabled:cursor-not-allowed disabled:opacity-50 md:flex-1"
         >
-          {thrusting ? "Encendido…" : "🔥 Ignición"}
+          {thrusting ? "Encendido…" : inFlight ? "En vuelo…" : "🔥 Ignición"}
         </button>
         <button
           onClick={onReset}
