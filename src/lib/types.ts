@@ -31,6 +31,8 @@ export interface AnalysisSnapshot {
   mass: number;
   /** Aceleración resultante (m/s²) = force / mass. */
   acceleration: number;
+  /** Rapidez alcanzada (m/s) al concluir el vuelo (se mantiene en gravedad cero). */
+  velocity: number;
 }
 
 export const DEFAULT_PARAMS: SimParams = {

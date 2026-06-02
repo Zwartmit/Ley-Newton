@@ -17,7 +17,7 @@ interface SceneProps {
   fov: number;
   onTelemetry: (t: Telemetry) => void;
   onThrustingChange: (thrusting: boolean) => void;
-  onFlightComplete: () => void;
+  onFlightComplete: (velocity: number) => void;
 }
 
 export default function Scene({

@@ -77,13 +77,14 @@ export default function SimulationApp() {
 
   // El vuelo concluyó (el cohete superó la altitud máxima y se reinició solo).
   // Congelamos los valores actuales en una instantánea para el informe.
-  const handleFlightComplete = useCallback(() => {
+  const handleFlightComplete = useCallback((velocity: number) => {
     setParams((current) => {
       setAnalysis({
         force: current.ejectionForce,
         mass: current.droneMass,
         acceleration:
           current.droneMass > 0 ? current.ejectionForce / current.droneMass : 0,
+        velocity,
       });
       return current;
     });

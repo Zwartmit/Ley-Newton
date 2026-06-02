@@ -33,8 +33,9 @@ interface DroneProps {
   resetId: number;
   onTelemetry: (t: Telemetry) => void;
   onThrustingChange: (thrusting: boolean) => void;
-  /** Se invoca cuando el cohete supera la altitud máxima y se reinicia solo. */
-  onFlightComplete: () => void;
+  /** Se invoca cuando el cohete supera la altitud máxima y se reinicia solo.
+   *  Recibe la rapidez alcanzada (m/s) justo antes del auto-reinicio. */
+  onFlightComplete: (velocity: number) => void;
   /** Ref compartida con la altura (Y) del cohete para el seguimiento de cámara. */
   droneYRef: RefObject<number>;
 }
@@ -135,8 +136,10 @@ export default function Drone({
     // Al superar la altitud máxima, el vuelo concluye: reiniciamos y solo
     // entonces dejamos que la interfaz revele el panel de análisis.
     if (posY > MAX_ALTITUDE) {
+      // Capturamos la rapidez ANTES de reiniciar (resetBody la pone a 0).
+      const reachedSpeed = speed;
       resetBody();
-      onFlightComplete();
+      onFlightComplete(reachedSpeed);
     }
   });
 
