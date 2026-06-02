@@ -6,16 +6,20 @@ import { useThree } from "@react-three/fiber";
 
 const MODEL_URL = "/models/scene-transformed.glb";
 
-// El cohete viene con geometría desplazada del origen (centro ≈ y −153) y a
-// escala nativa muy grande (alto ≈ 26,9 u). Lo recentramos al origen y lo
-// reescalamos para integrarlo en la escena. El nozzle de empuje está en
-// y = −0.95 (ver NOZZLE_Y), así que apoyamos la base del cohete justo ahí.
-const MODEL_CENTER: [number, number, number] = [1.312, -153.314, -392.6];
+// El cohete viene con la geometría desplazada del origen y, además, su eje
+// está ligeramente inclinado (~1°), por lo que centrar por la caja envolvente
+// dejaba el morro fuera del eje x=0,z=0 donde se dibujan las flechas de empuje.
+// Valores medidos sobre la malla (centroide de cortes superior/inferior):
+//  - AXIS_MID: punto medio del eje real del cohete.
+//  - AXIS_TILT_FIX: rotación correctora que endereza el eje a la vertical.
+//  - BOTTOM_OFFSET: y del extremo inferior respecto a AXIS_MID (escala nativa).
 const MODEL_SCALE = 0.12;
-const MODEL_HEIGHT = 26.88; // alto nativo en Y (bbox)
 const NOZZLE_Y = -0.95;
-// La base del cohete (extremo inferior) queda a la altura del nozzle.
-const GROUP_Y = NOZZLE_Y + (MODEL_HEIGHT * MODEL_SCALE) / 2;
+const AXIS_MID: [number, number, number] = [1.0976, -153.3574, -392.4346];
+const AXIS_TILT_FIX: [number, number, number] = [-0.0127, 0, -0.0172];
+const BOTTOM_OFFSET = -13.3952;
+// Apoyamos la base del cohete justo en el nozzle de empuje (y = −0.95).
+const GROUP_Y = NOZZLE_Y - BOTTOM_OFFSET * MODEL_SCALE;
 
 /**
  * Carga el modelo GLB del cohete mediante `useGLTF` (caché de drei).
@@ -41,10 +45,12 @@ export default function DroneModel() {
 
   return (
     <group position={[0, GROUP_Y, 0]} scale={MODEL_SCALE}>
-      <Clone
-        object={scene}
-        position={[-MODEL_CENTER[0], -MODEL_CENTER[1], -MODEL_CENTER[2]]}
-      />
+      <group rotation={AXIS_TILT_FIX}>
+        <Clone
+          object={scene}
+          position={[-AXIS_MID[0], -AXIS_MID[1], -AXIS_MID[2]]}
+        />
+      </group>
     </group>
   );
 }
