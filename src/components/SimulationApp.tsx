@@ -9,7 +9,12 @@ import TelemetryPanel from "./ui/TelemetryPanel";
 import AnalysisPanel from "./ui/AnalysisPanel";
 import CanvasControls from "./ui/CanvasControls";
 import { DEFAULT_FOV, FOV_STEP, MAX_FOV, MIN_FOV } from "@/lib/physics";
-import { DEFAULT_PARAMS, type SimParams, type Telemetry } from "@/lib/types";
+import {
+  DEFAULT_PARAMS,
+  type AnalysisSnapshot,
+  type SimParams,
+  type Telemetry,
+} from "@/lib/types";
 
 const THEORY_ID = "teoria";
 
@@ -20,6 +25,9 @@ export default function SimulationApp() {
   const [thrusting, setThrusting] = useState(false);
   // El panel de análisis solo se revela cuando concluye el vuelo (auto-reinicio).
   const [showAnalysis, setShowAnalysis] = useState(false);
+  // Instantánea congelada de fuerza/masa/aceleración al concluir el vuelo: el
+  // modal lee de aquí, así mover los sliders con el informe abierto no lo altera.
+  const [analysis, setAnalysis] = useState<AnalysisSnapshot | null>(null);
   const [fov, setFov] = useState(DEFAULT_FOV);
   const [telemetry, setTelemetry] = useState<Telemetry>({
     velocity: 0,
@@ -62,7 +70,19 @@ export default function SimulationApp() {
   const handleCloseAnalysis = useCallback(() => setShowAnalysis(false), []);
 
   // El vuelo concluyó (el dron superó la altitud máxima y se reinició solo).
-  const handleFlightComplete = useCallback(() => setShowAnalysis(true), []);
+  // Congelamos los valores actuales en una instantánea para el informe.
+  const handleFlightComplete = useCallback(() => {
+    setParams((current) => {
+      setAnalysis({
+        force: current.ejectionForce,
+        mass: current.droneMass,
+        acceleration:
+          current.droneMass > 0 ? current.ejectionForce / current.droneMass : 0,
+      });
+      return current;
+    });
+    setShowAnalysis(true);
+  }, []);
 
   const handleZoomIn = useCallback(
     () => setFov((f) => Math.max(MIN_FOV, f - FOV_STEP)),
@@ -139,7 +159,7 @@ export default function SimulationApp() {
               <AnalysisPanel
                 show={showAnalysis}
                 thrusting={thrusting}
-                params={params}
+                snapshot={analysis}
                 onClose={handleCloseAnalysis}
               />
             </div>
@@ -202,10 +222,12 @@ export default function SimulationApp() {
                 data-card
                 className="rounded-xl border border-white/10 bg-white/5 p-5"
               >
-                <h3 className="font-semibold text-cyan-300">Fuerza y Masa</h3>
+                <h3 className="font-semibold text-cyan-300">
+                  Fuerza de eyección (Empuje)
+                </h3>
                 <p className="mt-2 text-sm text-zinc-400">
-                  La fuerza neta acelera al dron; a mayor masa, mayor inercia y
-                  menor aceleración para la misma fuerza aplicada.
+                  Define la magnitud de la fuerza neta aplicada. A mayor fuerza,
+                  mayor aceleración resultante (proporcionalidad directa).
                 </p>
               </div>
               <div
@@ -213,21 +235,25 @@ export default function SimulationApp() {
                 className="rounded-xl border border-white/10 bg-white/5 p-5"
               >
                 <h3 className="font-semibold text-cyan-300">
-                  Aceleración (a = F/m)
+                  Masa del dron (Inercia)
                 </h3>
                 <p className="mt-2 text-sm text-zinc-400">
-                  La aceleración es directamente proporcional a la fuerza e
-                  inversamente proporcional a la masa del dron.
+                  Representa la resistencia al cambio de movimiento. A mayor masa
+                  estructural, menor aceleración bajo una fuerza constante
+                  (proporcionalidad inversa).
                 </p>
               </div>
               <div
                 data-card
                 className="rounded-xl border border-white/10 bg-white/5 p-5"
               >
-                <h3 className="font-semibold text-cyan-300">Gravedad Cero</h3>
+                <h3 className="font-semibold text-cyan-300">
+                  Masa del propelente (Combustible)
+                </h3>
                 <p className="mt-2 text-sm text-zinc-400">
-                  Sin gravedad ni rozamiento, la fuerza del propulsor es la única
-                  fuerza neta que actúa sobre el dron.
+                  No altera el cálculo de la aceleración, pero determina la
+                  cantidad de energía disponible, definiendo el tiempo total que
+                  dura la ignición de los motores.
                 </p>
               </div>
             </div>

@@ -2,14 +2,15 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import type { SimParams } from "@/lib/types";
+import type { AnalysisSnapshot } from "@/lib/types";
 
 interface AnalysisPanelProps {
   /** Se muestra una vez que ha ocurrido al menos un encendido. */
   show: boolean;
   /** Encendido actualmente activo (resalta el panel). */
   thrusting: boolean;
-  params: SimParams;
+  /** Instantánea congelada al concluir el vuelo (no varía con los sliders). */
+  snapshot: AnalysisSnapshot | null;
   /** Cierra el panel explícitamente (botón ✕). */
   onClose: () => void;
 }
@@ -38,17 +39,15 @@ function Line({
 
 /**
  * "Análisis del Sistema": panel educativo con estética cyberpunk que explica
- * en tiempo real la Segunda Ley de Newton inyectando las variables de estado.
+ * la Segunda Ley de Newton con la instantánea congelada al concluir el vuelo.
  */
 export default function AnalysisPanel({
   show,
   thrusting,
-  params,
+  snapshot,
   onClose,
 }: AnalysisPanelProps) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const { ejectionForce, droneMass } = params;
-  const acceleration = droneMass > 0 ? ejectionForce / droneMass : 0;
 
   // Animación de entrada al revelarse el panel.
   useEffect(() => {
@@ -83,7 +82,9 @@ export default function AnalysisPanel({
     return () => ctx.revert();
   }, [show]);
 
-  if (!show) return null;
+  if (!show || !snapshot) return null;
+
+  const { force: ejectionForce, mass: droneMass, acceleration } = snapshot;
 
   const num = (n: number, d = 2) =>
     n.toLocaleString("es", {
